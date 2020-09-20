@@ -1,0 +1,261 @@
+#JSGF V1.0;
+
+/**
+* JSGF Grammar
+*/
+
+grammar atc;
+
+//Defining all known callsigns of aircraft, separating by type
+public <cessna> = (cessna | skyhawk | november) (one seven two papa tango | two papa tango |
+                                        one two zero four whiskey | zero four whiskey |
+                                        three four five five yankee | five five yankee |
+                                        eight six eight niner x-ray | eight niner x-ray |
+                                        six niner zero delta alpha | zero delta alpha |
+                                        three six zero lima tango | zero lima tango |
+                                        five three five kilo sierra | five kilo sierra);
+public <caravan> = (caravan | iron air | mountain air | november) (two zero eight lima tango | eight lima tango |
+                                        four eleven | four zero one | five twenty five | five fifteen |
+                                        seven one two three alpha | two three alpha |
+                                        three seven three bravo delta | three bravo delta);
+public <twincessna> = (twin cessna | november) (one three eight eight victor | eight eight victor |
+                                        three one zero mike november | zero mike november |
+                                        three one zero delta sierra | zero delta sierra |
+                                        three one three sierra november | three sierra november |
+                                        three six six quebec bravo | six quebec bravo |
+                                        five zero seven foxtrot sierra | seven foxtrot sierra |
+                                        four one one charlie alpha | one charlie alpha);
+public <commander> = (commander | november) (four six six papa foxtrot | six papa foxtrot |
+                                        six zero eight zero yankee | eight zero yankee |
+                                        five five bravo foxtrot | five bravo foxtrot |
+                                        two four two whiskey bravo | two whiskey bravo |
+                                        two two seven golf kilo | seven golf kilo |
+                                        five eight delta zulu | eight delta zulu |
+                                        four one six bravo romeo | six bravo romeo);
+public <kingair> = (king air | november) (four two three two bravo | three two bravo |
+                                        four three five one victor | five one victor |
+                                        six one seven delta lima | seven delta lima |
+                                        six two three sierra charlie | three sierra charlie |
+                                        eight five eight echo foxtrot | eight echo foxtrot |
+                                        eight eight seven juliet golf | seven juliet golf |
+                                        two zero whiskey kilo | zero whiskey kilo);
+public <bonanza> = (bonanza | november) (one one four five two | four five two |
+                                        six three romeo golf | three romeo golf |
+                                        three zero four five zero | four five zero |
+                                        five two four alpha charlie | four alpha charlie |
+                                        one one eight bravo zulu | eight bravo zulu |
+                                        eight zero one delta foxtrot | one delta foxtrot |
+                                        four two five echo romeo | five echo romeo) |
+                                        three six bravo echo | six bravo echo |
+                                        one one one whiskey tango | one whiskey tango |
+                                        four two seven victor victor | seven victor victor |
+                                        three four two alpha bravo | two alpha bravo |
+                                        six two two foxtrot golf | two foxtrot golf |
+                                        two eight eight alpha tango | eight alpha tango |
+                                        five one five delta foxtrot | five delta foxtrot;
+public <beechjet> = (beach jet | november) (four zero foxtrot delta | zero foxtrot delta |
+                                        four zero mike yankee | zero mike yankee |
+                                        four one one charlie sierra | one charlie sierra |
+                                        four zero charlie sierra | zero charlie sierra |
+                                        six eight mike yankee | eight mike yankee |
+                                        eight zero one mike bravo | one mike bravo |
+                                        nine one one romeo sierra | one romeo sierra);
+public <baron> = (baron | november) (four zero seven lima yankee | seven lima yankee |
+                                        four two whiskey kilo | two whiskey kilo |
+                                        four two nine whiskey | two nine whiskey |
+                                        five six charlie delta | six charlie delta |
+                                        seven one golf lima | one golf lima |
+                                        eight niner tango papa | niner tango papa |
+                                        eight seven two niner bravo | two niner bravo);
+public <goldeneagle> = (golden eagle | november) (one zero sierra uniform | zero sierra uniform |
+                                        six zero five juliet foxtrot | five juliet foxtrot |
+                                        four two one bravo charlie | one bravo charlie |
+                                        two three seven romeo uniform | seven romeo uniform |
+                                        four five five quebec tango | five quebec tango |
+                                        four two two lima kilo | two lima kilo |
+                                        five zero three lima juliet | three lima juliet);
+public <citation> = (citation | november) (one zero juliet romeo | zero juliet romeo |
+                                        four three one lima | three one lima |
+                                        three three two victor sierra | two victor sierra |
+                                        six three five papa november | five papa november |
+                                        one one eight kilo tango | eight kilo tango |
+                                        nine one one bravo tango | one bravo tango |
+                                        one two seven papa zulu | seven papa zulu);
+public <challenger> = (challenger | november) (one two five eight echo | five eight echo |
+                                        niner three five tango tango | five tango tango |
+                                        three niner golf charlie | niner golf charlie |
+                                        six five eight five juliet | eight five juliet |
+                                        one one two bravo sierra | two bravo sierra |
+                                        eight one eight charlie sierra | eight charlie sierra |
+                                        eight five eight whiskey tango | eight whiskey tango);
+public <falcon> = (falcon | november) (seven three five sierra hotel | five sierra hotel |
+                                        five two one sierra hotel | one sierra hotel |
+                                        two five alpha bravo | five alpha bravo |
+                                        three seven alpha sierra | seven alpha sierra |
+                                        four six november tango | six november tango |
+                                        eight zero niner bravo zulu | niner bravo zulu |
+                                        one eight november charlie | eight november charlie);
+public <gulfstream> = (gulf stream | november) (one niner charlie hotel | niner charlie hotel |
+                                        seven five three whiskey sierra | three whiskey sierra |
+                                        three two two bravo charlie | two bravo charlie |
+                                        four four lima kilo | four lima kilo |
+                                        one two five hotel delta | five hotel delta |
+                                        niner two three foxtrot papa | three foxtrot papa |
+                                        five eight four three alpha | four three alpha);
+public <learjet> = (lear [jet] | november) (one zero two kilo mike | two kilo mike |
+                                        one two three juliet lima | three juliet lima |
+                                        one hotel delta |
+                                        four five five papa victor | five papa victor |
+                                        niner two one romeo whiskey | one romeo whiskey |
+                                        eight eight niner two golf | niner two golf |
+                                        one two three delta golf | three delta golf);
+public <mooney> = (mooney | november) (two zero papa alpha | zero papa alpha |
+                                        one two three november romeo | three november romeo |
+                                        five two one two four | one two four |
+                                        seven six three four papa | three four papa |
+                                        two zero six three whiskey | six three whiskey |
+                                        four four four tango tango | four tango tango |
+                                        six one zero romeo whiskey | zero romeo whiskey);
+public <cherokee> = (cherokee | november) (two eight eight delta sierra | eight delta sierra |
+                                        six two zero six foxtrot | zero six foxtrot |
+                                        three seven one charlie kilo | one charlie kilo |
+                                        three five five papa lima | five papa lima |
+                                        two niner niner one foxtrot | niner one foxtrot |
+                                        two eight eight papa mike | eight papa mike |
+                                        seven six four three kilo | four three kilo);
+public <navajo> = (navajo | november) (six three zero lima tango | zero lima tango |
+                                        six zero niner mike alpha | niner mike alpha |
+                                        eight five juliet romeo | five juliet romeo |
+                                        five four two alpha charlie | two alpha charlie |
+                                        four three tango papa | three tango papa |
+                                        one two two charlie bravo | two charlie bravo |
+                                        five seven six tango papa | six tango papa);
+public <seneca> = (seneca | november) (niner seven two six zulu | two six zulu |
+                                        niner one one kilo tango | one kilo tango |
+                                        six seven six papa sierra | six papa sierra |
+                                        one five seven charlie foxtrot | seven charlie foxtrot |
+                                        four three five niner yankee | five niner yankee |
+                                        six two niner seven charlie | niner seven charlie |
+                                        three two eight delta golf | eight delta golf);
+public <malibu> = (malibu | november) (five seven seven golf lima | seven golf lima |
+                                        four two two tango papa | two tango papa |
+                                        three eight one romeo golf | one romeo golf |
+                                        two eight three romeo whiskey | three romeo whiskey |
+                                        seven seven one charlie bravo | one charlie bravo |
+                                        four six papa alpha | six papa alpha |
+                                        six three four charlie lima | four charlie lima);
+public <cheyenne> = (cheyenne | november) (one one five sierra alpha | five sierra alpha |
+                                        two three zero alpha x-ray | zero alpha x-ray |
+                                        three niner alpha charlie | niner alpha charlie |
+                                        niner two one foxtrot alpha | one foxtrot alpha |
+                                        niner one five mike papa | five mike papa |
+                                        five one mike foxtrot | one mike foxtrot |
+                                        four five six alpha alpha | six alpha alpha);
+public <pilatus> = (pilatus | november) (one two papa charlie | two papa charlie |
+                                        three three four lima echo | four lima echo |
+                                        seven seven two romeo papa | two romeo papa |
+                                        five eight two tango tango | two tango tango |
+                                        two four six mike lima | six mike lima |
+                                        four eight zero bravo echo | zero bravo echo |
+                                        six four seven whiskey whiskey | seven whiskey whiskey);
+public <cirrus> = (cirrus | november) (two two sierra romeo | two sierra romeo |
+                                        four eight six charlie charlie | six charlie charlie |
+                                        three seven one romeo tango | one romeo tango |
+                                        five zero four sierra charlie | four sierra charlie |
+                                        one eight one papa papa | one papa papa |
+                                        two zero four delta sierra | four delta sierra |
+                                        six one five delta lima | five delta lima);
+
+//Defining acceptable aircraft id's based on known callsigns above
+public <acid> = <commander> | <kingair> | <bonanza> | <beechjet> | <baron> | <cessna> | <caravan> |
+                    <twincessna> | <citation> | <challenger> | <falcon> | <gulfstream> |
+                    <learjet> | <mooney> | <cherokee> | <navajo> | <seneca> | <malibu> |
+                    <cheyenne> | <pilatus> | <cirrus>;
+
+//Defining acceptable aircraft type's
+public <callsign> = november | cessna | skyhawk | commander | king air | bonanza | beach jet |
+                    baron | caravan | twin cessna | golden eagle | citation | challenger |
+                    falcon | gulfstream | lear [jet] | mooney | cherokee | malibu | seneca |
+                    cheyenne | pilatus | cirrus | helicopter;
+
+public <actype> = (<callsign> |
+                    [heavy] boeing (seven oh seven | seven seventeen | seven twenty seven | seven thirty seven | seven forty seven | seven fifty seven | seven sixty seven | seven (seventy | seven) seven | seven eighty seven | triple seven) |
+                    [heavy] airbus three (hundred | ten | twenty | forty | eighty) |
+                    regional jet | d c ten | m d eleven | m d eighty | dash eight);
+
+//Defining general use terms
+public <n> = (zero | one | two | three | four | five | six | seven | eight | niner);
+
+//Defining phraseology phrases
+public <self> = (tower | ground);
+public <runway> = [runway] (one six | three four | one zero right | one zero left | two eight right | two eight left) [(at <taxiway> | full length)];
+public <helipad> = (hell a pad) {helipad} (charlie | delta | foxtrot);
+public <taxiway> = [taxiway] (alpha | bravo | charlie | delta | echo | foxtrot | golf | hotel | india | juliet) [<taxiway>];
+public <taxiout> = taxi via <taxiway>;
+public <taxiin> = (taxi | proceed) to (falcon air | spartan aviation | [the] main ramp | [the] terminal | [the] radar [site] | [the] v o r | [the] crash shack) via <taxiway>;
+public <hold> = hold [in] position | (hold short of (<runway> | <taxiway>) [hold for wake turbulence | [for] (landing | departing) (traffic | aircraft) | awaiting release]);
+public <cross> = [proceed | continue] cross <runway> at <taxiway>;
+public <continue> = (continue taxiing | proceed | continue) [via (<taxiway> [<runway>] | <runway> [<taxiway>])];
+public <approach> = (make straight in | enter (left | right) (base | downwind)) <runway> | make approach straight in <helipad>;
+public <pattern> = (turn (cross wind | downwind | base) | (extend (up wind | cross wind | downwind) [<distance>] | make (left | right) three sixty | make short approach | (left | right) closed traffic approved)) [<pattern>];
+public <distance> = (one | two | three | four | five | six | seven | eight | niner | one zero) (mile | miles);
+public <compassdirection> = (north | south | east | west | northeast | northwest | southeast | southwest);
+public <relativedirection> = (straight ahead | behind you [and to your (right | left)] | ahead and to your (right | left) | off your (right | left));
+public <patternposition> = ((left | right) (downwind | base) | (<distance> | short) final | departing) [<runway>];
+public <exactposition> = <distance> <compassdirection> of (the) airport;
+public <heading> = <compassdirection> bound | opposite direction;
+public <traffic> = ((traffic | aircraft | vehicle) /*((<exactposition> | <relativedirection> | <patternposition>) <actype> [<heading>] |
+                            (<exactposition> | <relativedirection> | <patternposition>) [<heading>] <actype> |
+                            [<heading>] <actype> (<exactposition> | <relativedirection> | <patternposition>) |
+                            <actype> [<heading>] (<exactposition> | <relativedirection> | <patternposition>) |
+                            <actype> (<exactposition> | <relativedirection> | <patternposition>) [<heading>]|
+                            [<heading>] (<exactposition> | <relativedirection> | <patternposition>) <actype> |
+                            [<actype>] ((departing | holding in position) [<runway>] | departing ahead) | crossing down field |
+                            exiting the runway prior to your intersection | <distance> final | (will depart | departing) prior to your arrival) |
+                            (traffic | aircraft) landing <runway> will hold short of your runway |
+                            (traffic | vehicle | aircraft) (on the runway | crossing the runway) | (traffic | aircraft) departing [<runway>] | departing (traffic | aircraft) [<runway>] |
+                            traffic (landing | departing) [and (landing | departing)] <runway> [and <runway>]*/)
+                            [<traffic>];
+public <trafficalert> = traffic alert <acid> <relativedirection> (advise you <evasiveaction> [and <evasiveaction>] immediately);
+public <evasiveaction> = turn (left | right) | climb | descend | make (left | right) three sixty;
+public <waketurb> = (caution wake turbulence [[<actype>] (departed | departing | arrived | arriving | landed | landing) [<actype>]]);
+public <takeoffclearance> = ([wind <n> <n> <n> at <n> [<n>]] [fly runway heading | turn left heading (two five zero | two six five | zero seven zero | zero eight five) | turn right heading (two niner five | three one zero | one one five | one three zero)] (<runway> | <helipad>) cleared for takeoff [wind <n> <n> <n> at <n> [<n>]]);
+public <landingclearance> =  [(<runway> | <helipad>)] (cleared to land | continue) | [<runway>] cleared (touch and go | stop and go | low approach);
+public <luaw> = <runway> line up and wait;
+public <runwaychange> = change to <runway> <landingclearance>;
+public <follow> = number <n> traffic (<actype> <patternposition> | <patternposition> <actype>);
+public <goaround> = go around (<traffic>) | it appears you're (aligned | lined up) (with | to | for) (the wrong runway | <runway>) go around;
+public <ifrgoaround> = turn (left | right) heading (zero two zero | three four zero) climb and maintain three thousand;
+public <exitrunway> = [when able] turn (left | right) [at] <taxiway>;
+public <frequencychange> = contact ground [when off] | contact tower | contact departure;
+public <visualwaketurbsep> = <traffic> (do you have it in sight | advise in sight) | (maintain visual separation [from that (aircraft | <actype>)] <waketurb>);
+public <cancelclearance> = cancel (takeoff | landing) clearance;
+
+
+//Defining acceptable phraseology combinations
+public <contact> = (<acid> | <acid> <self>);
+public <taxitorunway1> = <contact> (<runway> | <helipad>) <taxiout> [<cross>] [<hold>] ;
+public <continuetaxi> = <contact> [<continue>] [<cross>] [<continue>] [<hold>] [<traffic>];
+public <taxitopoint> = <contact> <taxiin> [<cross>] [<hold>];
+public <switchfreq> = <contact> [<exitrunway>] [(<cross> | <hold>)] [<frequencychange>] [<traffic>];
+public <clearanceinstruction> = [<contact>] [<traffic>] [<runwaychange>] [(<landingclearance> | <takeoffclearance> | <luaw>)] [<follow>] [<traffic>] [<waketurb>];
+public <approachinstruction> = <contact> <approach> [<landingclearance>] [<follow>] [<traffic>] [<waketurb>];
+public <goaroundinstruction> = <contact> [<goaround>] [<ifrgoaround>];
+public <cancelinstruction> = <contact> <cancelclearance> [<traffic>];
+public <visualsepinstruction> = <contact> <visualwaketurbsep> [(<landingclearance>)] [<follow>] [<traffic>];
+public <trafficwhileonrunway> = <contact> <hold> [<traffic>];
+public <patterninstruction> = <contact> <pattern> [<clearanceinstruction>];
+
+
+
+//Previously used to generate aircraft callsigns by formula, allowing any combination of callsign + letters and/or numbers
+//Used too much memory and was highly inaccurate, using defined callsigns to reduce memory usage
+/*
+public <l> = alpha | bravo | charlie | delta | echo | foxtrot | golf | hotel | india |
+                    juliet | kilo | lima | mike | november | oscar | papa | quebec | romeo |
+                    sierra | tango | uniform | victor | whiskey | x-ray | yankee | zulu;
+
+public <commercial> = iron air | mountain [air] | life flight | police |
+                    air canada | air france | alaska | american | delta | envoy | fedex |
+                    jet link | jet blue | k l m | piedmont | brick yard | sky west | southwest |
+                    air force | u p s | united;*/
