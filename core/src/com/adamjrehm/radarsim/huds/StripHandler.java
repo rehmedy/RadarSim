@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.graalvm.compiler.core.common.type.ArithmeticOpTable;
 
-public class Strips {
+public class StripHandler {
 
     private Stage stage;
     private OrthographicCamera camera;
@@ -34,7 +34,7 @@ public class Strips {
     private VerticalGroup arrivalTable, departureTable;
 
 
-    public Strips(PlaneController controller){
+    public StripHandler(PlaneController controller){
         this.controller = controller;
 
         this.camera = new OrthographicCamera();

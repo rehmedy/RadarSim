@@ -2,17 +2,14 @@ package com.adamjrehm.radarsim.planes;
 
 import com.adamjrehm.radarsim.RadarSim;
 import com.adamjrehm.radarsim.config.CallsignManager;
-import com.adamjrehm.radarsim.config.Configuration;
 import com.adamjrehm.radarsim.geography.PatternDrawable;
-import com.adamjrehm.radarsim.huds.AirplaneCommandTable;
+import com.adamjrehm.radarsim.huds.AirplaneCommandHandler;
 import com.adamjrehm.radarsim.geography.Intersection;
 import com.adamjrehm.radarsim.geography.Pattern;
-import com.adamjrehm.radarsim.helpers.GameInfo;
-import com.adamjrehm.radarsim.huds.Strips;
+import com.adamjrehm.radarsim.huds.StripHandler;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class PlaneController implements InputProcessor {
@@ -20,9 +17,9 @@ public class PlaneController implements InputProcessor {
 
     private Array<Airplane> planelist;
 
-    private AirplaneCommandTable commandHandler;
+    private AirplaneCommandHandler commandHandler;
 
-    private Strips stripHandler;
+    private StripHandler stripHandler;
 
     private Pattern lastUsedInboundStartPoint;
 
@@ -30,13 +27,15 @@ public class PlaneController implements InputProcessor {
     private Array<CallsignManager.Callsign> tempCommercialPlaneList;
     private Array<Airplane> arrivalList, departureList;
 
+    private boolean simPaused = false;
+
     private int operationsCounter = 0;
 
     public PlaneController(RadarSim sim) {
         this.sim = sim;
 
         planelist = new Array<>();
-        commandHandler = new AirplaneCommandTable(sim, this);
+        commandHandler = new AirplaneCommandHandler(sim, this);
 
         tempCommercialPlaneList = CallsignManager.getCommercialPlaneCallsigns();
         tempGAPlaneList = CallsignManager.getGAPlaneCallsigns();
@@ -47,7 +46,7 @@ public class PlaneController implements InputProcessor {
         departureList = new Array<>();
         populateDepartures(4);
 
-        stripHandler = new Strips(this);
+        stripHandler = new StripHandler(this);
     }
 
     private void populateArrivals(int count) {
@@ -140,8 +139,10 @@ public class PlaneController implements InputProcessor {
      */
     public void render(SpriteBatch batch) {
         for (Airplane p : planelist) {
-            p.update(batch);
-            batch.draw(p, p.getX(), p.getY());
+            if (!simPaused)
+                p.update();
+
+            p.render(batch);
 
             // Unnecessary extra code
 //            if (p.getTextButton().isChecked())
@@ -156,6 +157,26 @@ public class PlaneController implements InputProcessor {
             }
         }
         commandHandler.update(planelist);
+    }
+
+    public void pause(){
+        simPaused = true;
+        System.out.println("Simulation paused.");
+    }
+
+    public void resume(){
+        simPaused = false;
+        System.out.println("Simulation resumed.");
+    }
+
+    public void pause(Airplane p){
+        p.pause();
+        System.out.println(p.getCallsign() + ": Paused.");
+    }
+
+    public void resume(Airplane p){
+        p.resume();
+        System.out.println(p.getCallsign() + ": Resumed.");
     }
 
     /**
@@ -340,11 +361,11 @@ public class PlaneController implements InputProcessor {
         }
     }
 
-    public AirplaneCommandTable getCommandHandler(){
+    public AirplaneCommandHandler getCommandHandler(){
         return this.commandHandler;
     }
 
-    public Strips getStripHandler(){ return this.stripHandler; }
+    public StripHandler getStripHandler(){ return this.stripHandler; }
 
     @Override
     public boolean keyDown(int keycode) {

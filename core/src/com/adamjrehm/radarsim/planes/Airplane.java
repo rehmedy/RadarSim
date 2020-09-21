@@ -30,6 +30,7 @@ public class Airplane extends Sprite {
     private float extendDownwind = 0, extendUpwind = 0, extendCrosswind = 0;
     private float extendDownwindCache = 0, extendUpwindCache = 0, extendCrosswindCache = 0;
     private boolean landed, taxiing, clearedForTakeoff = false, clearedToLand = false, goingAround = false, outOfJurisdiction;
+    private boolean paused;
     private Vector2 pos, dir, vel;
     private Array<Pattern> alternatePattern;
     private Array<Pattern> departurePath;
@@ -152,192 +153,102 @@ public class Airplane extends Sprite {
     /**
      * Calculates & updates airplane every render cycle
      */
-    public void update(SpriteBatch batch) {
-        // If we have not touched down on the runway for our final landing
-        if (landings > 0) {     //If plane has not touched down for their final landing
+    public void update() {
+        if (!paused) {
+            // If we have not touched down on the runway for our final landing
+            if (landings > 0) {     //If plane has not touched down for their final landing
 
-            // If we do not have a "next" vector to fly to,
-            // Check if we have touched down, deduct a landing, return to default pattern
-            // Get the next default vector
-            if (next == null) {
-                if (last == Pattern.TOUCHDOWN_28L || last == Pattern.TOUCHDOWN_28R) {
-                    landings--;
-                    extendUpwind = 0;
-                    extendCrosswind = 0;
-                    extendDownwind = 0;
-                    extendUpwindCache = 0;
-                    extendCrosswindCache = 0;
-                    extendDownwindCache = 0;
-                    alternatePattern = null;
-                    if (!clearedToLand)
-                        landings++;
-                    clearedToLand = false;
+                // If we do not have a "next" vector to fly to,
+                // Check if we have touched down, deduct a landing, return to default pattern
+                // Get the next default vector
+                if (next == null) {
+                    if (last == Pattern.TOUCHDOWN_28L || last == Pattern.TOUCHDOWN_28R) {
+                        landings--;
+                        extendUpwind = 0;
+                        extendCrosswind = 0;
+                        extendDownwind = 0;
+                        extendUpwindCache = 0;
+                        extendCrosswindCache = 0;
+                        extendDownwindCache = 0;
+                        alternatePattern = null;
+                        if (!clearedToLand)
+                            landings++;
+                        clearedToLand = false;
+                    }
+
+                    System.out.println(callsign + ": Getting next vector...");
+                    getNextVector();
+                    System.out.println(callsign + ": Next Vector: " + next);
+                    System.out.println(callsign + ": Current Alternate Pattern: " + alternatePattern);
+
+                    // If the alternate pattern array is populated, use it
+                    if (alternatePattern != null && alternatePattern.size > 0)
+                        next = alternatePattern.removeIndex(0);
+
+                    // Subtract destination vector from current position to find direction to that vector
+                    // Normalize the result to be 1 unit of movement in that direction
+                    dir = next.getVector2().cpy().sub(pos).nor();
                 }
 
-                System.out.println(callsign + ": Getting next vector...");
-                getNextVector();
-                System.out.println(callsign + ": Next Vector: " + next);
-                System.out.println(callsign + ": Current Alternate Pattern: " + alternatePattern);
+                // Reduce speed if cleared to land
+                if (clearedToLand && speed > (.75f * type.getSpeed())) {
+                    speed += Configuration.getPlaneDecelerationRate() * Gdx.graphics.getDeltaTime();
+                }
 
-                // If the alternate pattern array is populated, use it
-                if (alternatePattern != null && alternatePattern.size > 0)
-                    next = alternatePattern.removeIndex(0);
+                // If we're not cleared to land and under max speed, speed up
+                else if (!clearedToLand && speed < type.getSpeed())
+                    speed += Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime();
 
-                // Subtract destination vector from current position to find direction to that vector
-                // Normalize the result to be 1 unit of movement in that direction
-                dir = next.getVector2().cpy().sub(pos).nor();
-            }
+                // Scale direction vector to our speed * time
+                // Update our position & store the time it took
+                vel = dir.cpy().scl((float) pxMovedPerSecond() * Gdx.graphics.getDeltaTime());
+                pos.set(pos.x + vel.x, pos.y + vel.y);
+                lastUpdateTime += Gdx.graphics.getDeltaTime();
 
-            // Reduce speed if cleared to land
-            if (clearedToLand && speed > (.75f * type.getSpeed())){
-                speed += Configuration.getPlaneDecelerationRate() * Gdx.graphics.getDeltaTime();
-            }
-
-            // If we're not cleared to land and under max speed, speed up
-            else if (!clearedToLand && speed < type.getSpeed())
-                speed += Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime();
-
-            // Scale direction vector to our speed * time
-            // Update our position & store the time it took
-            vel = dir.cpy().scl((float) pxMovedPerSecond() * Gdx.graphics.getDeltaTime());
-            pos.set(pos.x + vel.x, pos.y + vel.y);
-            lastUpdateTime += Gdx.graphics.getDeltaTime();
-
-            // Update the sprite position on the batch one time per X second(s) to mimic a radar scope
-            if (lastUpdateTime >= Configuration.getRadarUpdateSpeed()) {
+                // Update the sprite position on the batch one time per X second(s) to mimic a radar scope
+                if (lastUpdateTime >= Configuration.getRadarUpdateSpeed()) {
 //                System.out.println("Position: " + this.pos.x + " / " + this.pos.y);
 //                System.out.println("Bounding Rectangle: " + this.getBoundingRectangle().x + " / " + this.getBoundingRectangle().y);
 //                System.out.println("Center: " + (this.getBoundingRectangle().x + (this.getBoundingRectangle().width / 2)) + " / " + (this.getBoundingRectangle().y + (this.getBoundingRectangle().height / 2)));
 //                System.out.println("Rectangle Width/Height: " + this.getBoundingRectangle().width + " / " + this.getBoundingRectangle().height);
 //                System.out.println("Sprite Width/Height: " + this.getWidth() + " / " + this.getHeight());
-                setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 2);
-                lastUpdateTime = 0;
-            }
+                    setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 2);
+                    lastUpdateTime = 0;
+                }
 
-            // If we have arrived at the destination vector, clear the destination
-            // And set our last position to our previous destination
-            if (pos.dst(next.getVector2()) < 1 / 2f) {
-                last = next;
-                next = null;
-            }
-
-            drawDataTag(batch);
-        }
-
-        // Once we touch down for final landing, set 'landed' to true
-        else if (landings == 0 && (last == Pattern.TOUCHDOWN_28L || last == Pattern.TOUCHDOWN_28R) && !landed) {
-            landed = true;
-            taxiing = true;
-            next = null;
-        }
-
-        // If we're landed, taxi off the runway
-        else if (landed && taxiing) {
-
-            // Get the default runway exit path for the type of aircraft, populate an array
-            if (landingPath == null)
-                landingPath = new Array<Intersection>(type.getDefaultLandingPath(rwy));
-
-            // Determine the next vector from the landingPath array
-            if (next == null && landingPath.size > 0)
-                next = landingPath.removeIndex(0);
-
-            // Decelerate to 60 while on the runway and then to 20 when on the taxiway
-            if (speed > 60 || (speed > 20 && landingPath.size == 0))
-                speed += (Configuration.getPlaneDecelerationRate() * Gdx.graphics.getDeltaTime());
-
-            // Determine velocity then add that vector to our position
-            dir = next.getVector2().cpy().sub(pos).nor();
-            vel = dir.cpy().scl((float) pxMovedPerSecond() * Gdx.graphics.getDeltaTime());
-            pos.set(pos.x + vel.x, pos.y + vel.y);
-            lastUpdateTime += Gdx.graphics.getDeltaTime();
-
-            // Update the sprite position on the batch one time per X second(s) to mimic a radar scope
-            if (lastUpdateTime >= Configuration.getRadarUpdateSpeed()) {
-                setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 2);
-                lastUpdateTime = 0;
-            }
-
-            // If we have arrived at the destination vector, clear the destination
-            // And set our last position to our previous destination
-            if (pos.dst(next.getVector2()) < 1 / 2f) {
-                if (landingPath.size == 0) {
-                    taxiing = false;
-                    last = next;
-                } else {
+                // If we have arrived at the destination vector, clear the destination
+                // And set our last position to our previous destination
+                if (pos.dst(next.getVector2()) < 1 / 2f) {
                     last = next;
                     next = null;
                 }
+
+                //drawDataTag(batch);
             }
 
-            drawDataTag(batch);
-
-        }
-
-        // If the aircraft exits the runway onto Ground Control's taxiway
-        // Allow the aircraft to sit in that position for between 3 - 30 seconds
-        else if (landed && (last == Intersection.R28R_HS_NORTH_D || last == Intersection.R28R_HS_NORTH_E ||
-                last == Intersection.R28R_HS_NORTH_F || last == Intersection.R28R_HS_NORTH_G)){
-            if (tempTimer > 0)
-                tempTimer -= Gdx.graphics.getDeltaTime();
-            else if (tempTimer == -1)
-               tempTimer = 3 + (float)(Math.random() * 27);
-            else {
-                outOfJurisdiction = true;
+            // Once we touch down for final landing, set 'landed' to true
+            else if (landings == 0 && (last == Pattern.TOUCHDOWN_28L || last == Pattern.TOUCHDOWN_28R) && !landed) {
+                landed = true;
+                taxiing = true;
+                next = null;
             }
 
-        }
-        else if (landings < 0){
+            // If we're landed, taxi off the runway
+            else if (landed && taxiing) {
 
-            // If we have a next variable and we're taxiing, speed up to 20 knots
-            if (next != null && taxiing){
-                if (speed < 20)
-                    speed += (Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime());
-            }
+                // Get the default runway exit path for the type of aircraft, populate an array
+                if (landingPath == null)
+                    landingPath = new Array<Intersection>(type.getDefaultLandingPath(rwy));
 
-            // If we're neither taxiing or cleared for takeoff, stop
-            else if (!taxiing & !clearedForTakeoff){
-                if (speed > 0)
+                // Determine the next vector from the landingPath array
+                if (next == null && landingPath.size > 0)
+                    next = landingPath.removeIndex(0);
+
+                // Decelerate to 60 while on the runway and then to 20 when on the taxiway
+                if (speed > 60 || (speed > 20 && landingPath.size == 0))
                     speed += (Configuration.getPlaneDecelerationRate() * Gdx.graphics.getDeltaTime());
-            }
 
-            // If we're cleared for takeoff & no longer taxiing
-            else if (clearedForTakeoff){
-
-                // Accelerate to max speed
-                if (speed < type.getSpeed())
-                    speed += Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime();
-
-                // If we have nothing more in our departure path, and no next variable
-                // We must be departed
-                if (next == null && departurePath.size == 0){
-                    if (landings == -1) {
-                        clearedForTakeoff = false;
-                        taxiing = false;
-                        outOfJurisdiction = true;
-                    } else {
-                        clearedForTakeoff = false;
-                        taxiing = false;
-                        landings = -1 * landings;
-                    }
-                }
-
-                // If the departure path has objects and we need to find our next vector
-                // And we are not waiting to line up on the runway, pull from the departure path
-                else if (!(last.equals(Intersection.R28L_HS_NORTH_A) || last.equals(Intersection.R28R_HS_NORTH_A) ||
-                        last.equals(Intersection.R28R_HS_NORTH_C) || last.equals(Intersection.R28L_HS_NORTH_C) ||
-                        last.equals(Intersection.R16_HS_WEST_H) || last.equals(Intersection.R16_HS_EAST_H)) && next == null){
-                    next = departurePath.removeIndex(0);
-                    System.out.println(departurePath);
-                }
-
-                // If neither of those apply, we must be waiting to line up on the runway
-                else {
-                    lineUp();
-                }
-            }
-
-            if (taxiing || clearedForTakeoff) {
+                // Determine velocity then add that vector to our position
                 dir = next.getVector2().cpy().sub(pos).nor();
                 vel = dir.cpy().scl((float) pxMovedPerSecond() * Gdx.graphics.getDeltaTime());
                 pos.set(pos.x + vel.x, pos.y + vel.y);
@@ -349,21 +260,117 @@ public class Airplane extends Sprite {
                     lastUpdateTime = 0;
                 }
 
-                // If we reach our next vector, set the last vector equal to that value, stop taxiing
-                // and clear the next vector
-                if (pos.dst(next.getVector2()) < 1 / 4f) {
-                    taxiing = false;
-                    last = next;
-                    next = null;
+                // If we have arrived at the destination vector, clear the destination
+                // And set our last position to our previous destination
+                if (pos.dst(next.getVector2()) < 1 / 2f) {
+                    if (landingPath.size == 0) {
+                        taxiing = false;
+                        last = next;
+                    } else {
+                        last = next;
+                        next = null;
+                    }
                 }
+
+                //drawDataTag(batch);
 
             }
 
-            drawDataTag(batch);
+            // If the aircraft exits the runway onto Ground Control's taxiway
+            // Allow the aircraft to sit in that position for between 3 - 30 seconds
+            else if (landed && (last == Intersection.R28R_HS_NORTH_D || last == Intersection.R28R_HS_NORTH_E ||
+                    last == Intersection.R28R_HS_NORTH_F || last == Intersection.R28R_HS_NORTH_G)) {
+                if (tempTimer > 0)
+                    tempTimer -= Gdx.graphics.getDeltaTime();
+                else if (tempTimer == -1)
+                    tempTimer = 3 + (float) (Math.random() * 27);
+                else {
+                    outOfJurisdiction = true;
+                }
 
+            } else if (landings < 0) {
+
+                // If we have a next variable and we're taxiing, speed up to 20 knots
+                if (next != null && taxiing) {
+                    if (speed < 20)
+                        speed += (Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime());
+                }
+
+                // If we're neither taxiing or cleared for takeoff, stop
+                else if (!taxiing & !clearedForTakeoff) {
+                    if (speed > 0)
+                        speed += (Configuration.getPlaneDecelerationRate() * Gdx.graphics.getDeltaTime());
+                }
+
+                // If we're cleared for takeoff & no longer taxiing
+                else if (clearedForTakeoff) {
+
+                    // Accelerate to max speed
+                    if (speed < type.getSpeed())
+                        speed += Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime();
+
+                    // If we have nothing more in our departure path, and no next variable
+                    // We must be departed
+                    if (next == null && departurePath.size == 0) {
+                        if (landings == -1) {
+                            clearedForTakeoff = false;
+                            taxiing = false;
+                            outOfJurisdiction = true;
+                        } else {
+                            clearedForTakeoff = false;
+                            taxiing = false;
+                            landings = -1 * landings;
+                        }
+                    }
+
+                    // If the departure path has objects and we need to find our next vector
+                    // And we are not waiting to line up on the runway, pull from the departure path
+                    else if (!(last.equals(Intersection.R28L_HS_NORTH_A) || last.equals(Intersection.R28R_HS_NORTH_A) ||
+                            last.equals(Intersection.R28R_HS_NORTH_C) || last.equals(Intersection.R28L_HS_NORTH_C) ||
+                            last.equals(Intersection.R16_HS_WEST_H) || last.equals(Intersection.R16_HS_EAST_H)) && next == null) {
+                        next = departurePath.removeIndex(0);
+                        System.out.println(departurePath);
+                    }
+
+                    // If neither of those apply, we must be waiting to line up on the runway
+                    else {
+                        lineUp();
+                    }
+                }
+
+                if (taxiing || clearedForTakeoff) {
+                    dir = next.getVector2().cpy().sub(pos).nor();
+                    vel = dir.cpy().scl((float) pxMovedPerSecond() * Gdx.graphics.getDeltaTime());
+                    pos.set(pos.x + vel.x, pos.y + vel.y);
+                    lastUpdateTime += Gdx.graphics.getDeltaTime();
+
+                    // Update the sprite position on the batch one time per X second(s) to mimic a radar scope
+                    if (lastUpdateTime >= Configuration.getRadarUpdateSpeed()) {
+                        setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 2);
+                        lastUpdateTime = 0;
+                    }
+
+                    // If we reach our next vector, set the last vector equal to that value, stop taxiing
+                    // and clear the next vector
+                    if (pos.dst(next.getVector2()) < 1 / 4f) {
+                        taxiing = false;
+                        last = next;
+                        next = null;
+                    }
+
+                }
+
+                //drawDataTag(batch);
+
+            }
+
+            timeAlive += Gdx.graphics.getDeltaTime();
         }
+    }
 
-        timeAlive += Gdx.graphics.getDeltaTime();
+    public void render(SpriteBatch batch){
+        drawDataTag(batch);
+        batch.draw(this, getX(), getY());
     }
 
     /**
@@ -1664,6 +1671,14 @@ public class Airplane extends Sprite {
         Rectangle boundingRectangle = this.getBoundingRectangle();
         return x >= boundingRectangle.x && x <= boundingRectangle.x + boundingRectangle.width &&
                 y >= boundingRectangle.y && y <= boundingRectangle.y + boundingRectangle.height;
+    }
+
+    public void pause(){
+        paused = true;
+    }
+
+    public void resume(){
+        paused = false;
     }
 
     public Pattern getFinalDepartureInstruction(){

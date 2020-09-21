@@ -42,7 +42,7 @@ public class CallsignManager {
 
         GAPlaneCallsigns = new Array<>();
 
-        String GAPlaneListPath = "./config/generalaviationplanes.txt";
+        String GAPlaneListPath = "./configs/generalaviationplanes.txt";
 
         if (new File(GAPlaneListPath).exists()){
 
@@ -78,7 +78,7 @@ public class CallsignManager {
 
         commercialPlaneCallsigns = new Array<>();
 
-        String commercialPlaneListPath = "./config/commercialplanes.txt";
+        String commercialPlaneListPath = "./configs/commercialplanes.txt";
 
         if (new File(commercialPlaneListPath).exists()){
 

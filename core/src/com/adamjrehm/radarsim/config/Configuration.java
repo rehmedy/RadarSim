@@ -40,7 +40,7 @@ public class Configuration {
     public boolean loadAirportConfiguration() {
         System.out.println("Loading airport configuration...");
 
-        String configFilePath = "./config/config.properties";
+        String configFilePath = "./configs/config.properties";
 
         Properties prop = new Properties();
 
