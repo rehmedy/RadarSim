@@ -1,46 +1,25 @@
 package com.adamjrehm.radarsim.huds;
 
-import com.adamjrehm.radarsim.RadarSim;
 import com.adamjrehm.radarsim.config.Configuration;
 import com.adamjrehm.radarsim.geography.DeparturePoint;
 import com.adamjrehm.radarsim.geography.Pattern;
 import com.adamjrehm.radarsim.geography.Runway;
-import com.adamjrehm.radarsim.helpers.GameInfo;
 import com.adamjrehm.radarsim.planes.Airplane;
 import com.adamjrehm.radarsim.planes.FPLType;
 import com.adamjrehm.radarsim.planes.PlaneController;
+import com.adamjrehm.radarsim.scenes.Gameplay;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class AirplaneCommandHandler {
+public class AirplaneCommandHandler extends Table {
 
-    private RadarSim radarSim;
     private PlaneController controller;
 
-    private Stage stage;
-    private OrthographicCamera camera;
-    private Viewport viewport;
-
-    private Texture buttonUpTexture = new Texture("images/buttonup.png"),
-                    buttonDownTexture = new Texture("images/buttondown.png"),
-                    buttonCheckedTexture = new Texture("images/buttonchecked.png"),
-                    buttonUpSlimTexture = new Texture("images/buttonupslim.png"),
-                    buttonDownSlimTexture = new Texture("images/buttondownslim.png");
-
-    private BitmapFont font = new BitmapFont();
+    private VerticalGroup column1;
 
     private Container<VerticalGroup> airplaneTableContainer, column2Container, column3Container, newPlaneTableContainer;
 
@@ -49,28 +28,21 @@ public class AirplaneCommandHandler {
     private Container<VerticalGroup> planeInfoTableContainer;
     private VerticalGroup planeInfoTable;
     private Label nextVectorLabel, lastVectorLabel, speedLabel, isAirborneLabel, inboundOrOutboundLabel, touchAndGoCountLabel,
-                    locationLabel, directionFromAirportLabel;
+                    locationLabel;
 
     private ButtonGroup<TextButton> airplaneButtonGroup, setValueButtonGroup;
 
+    private final TextButton pausePlaneButton = new TextButton("Pause Plane", Configuration.UI.getButtonStyle(false, false, Color.YELLOW));
+    private final TextButton resumePlaneButton = new TextButton("Resume Plane", Configuration.UI.getButtonStyle(false, false, Color.GREEN));
+    private final TextButton removePlaneButton = new TextButton("Remove Plane", Configuration.UI.getButtonStyle(false, false, Color.FIREBRICK));
+
+
     private Airplane selected;
 
-    private boolean changedSelection;
-
-
-    public AirplaneCommandHandler(RadarSim sim, PlaneController controller){
+    public AirplaneCommandHandler(Gameplay gameplay){
 
         // Initialization
-        this.radarSim = sim;
-        this.controller = controller;
-
-        this.camera = new OrthographicCamera();
-        this.viewport = new FitViewport(GameInfo.VIRTUAL_WIDTH, GameInfo.VIRTUAL_HEIGHT, camera);
-        this.viewport.getCamera().position.set(GameInfo.VIRTUAL_WIDTH / 2f, GameInfo.VIRTUAL_HEIGHT / 2f, 0);
-
-        stage = new Stage(viewport);
-
-        //Gdx.input.setInputProcessor(stage);
+        this.controller = gameplay.getPlaneController();
 
         // Button Groups
         this.airplaneButtonGroup = new ButtonGroup<>();
@@ -95,70 +67,42 @@ public class AirplaneCommandHandler {
 
 
         // Table Containers
-        float containerWidth = GameInfo.VIRTUAL_WIDTH / 11f;
-        float containerHeight = GameInfo.VIRTUAL_HEIGHT;
+        this.column1 = new VerticalGroup();
+
         this.airplaneTableContainer = new Container<>();
-        airplaneTableContainer.setSize(containerWidth, containerHeight / 2);
-        airplaneTableContainer.setPosition(1250,450);
         airplaneTableContainer.setActor(airplaneTable);
-        airplaneTableContainer.align(Align.topLeft);
 
         this.column2Container = new Container<>();
-        column2Container.setSize(containerWidth, containerHeight);
-        column2Container.setPosition(1250 + airplaneTableContainer.getWidth(), 0);
         column2Container.setActor(commandTable);
-        column2Container.align(Align.topLeft);
         column2Container.setVisible(false);
 
         this.column3Container = new Container<>();
-        column3Container.setSize(containerWidth, containerHeight);
-        column3Container.setPosition(1250 + airplaneTableContainer.getWidth() + column2Container.getWidth(), 0);
-        column3Container.align(Align.topLeft);
         column3Container.setVisible(false);
 
         this.newPlaneTableContainer = new Container<>();
-        newPlaneTableContainer.setSize(containerWidth, containerHeight);
-        newPlaneTableContainer.setPosition(2250,0);
         newPlaneTableContainer.setActor(newPlaneTable);
-        newPlaneTableContainer.align(Align.topRight);
 
         planeInfoTableContainer = new Container<>();
-        planeInfoTableContainer.setSize(containerWidth, 200);
-        planeInfoTableContainer.setPosition(1235, 1040);
         planeInfoTableContainer.setActor(planeInfoTable);
-        planeInfoTableContainer.align(Align.top);
         planeInfoTableContainer.setVisible(false);
 
-        // Add everything to stage
-        stage.addActor(airplaneTableContainer);
-        stage.addActor(column2Container);
-        stage.addActor(column3Container);
-        stage.addActor(newPlaneTableContainer);
-        stage.addActor(planeInfoTableContainer);
-    }
+        column1.addActor(planeInfoTableContainer);
+        column1.addActor(airplaneTableContainer);
 
-    public void render(){
-        stage.getViewport().apply();
-        stage.act();
-        stage.draw();
+        defaults().top().fillX();
+
+        add(column1).expand().uniform();
+        add(column2Container).expand().uniform();
+        add(column3Container).expand().uniform();
+        add(newPlaneTableContainer).expand().uniform();
+
+        //setDebug(true);
     }
 
     public void update(Array<Airplane> planes){
-        // Get selected aircraft if new click is detected
-//      if (changedSelection) {
-
         // If an aircraft is checked, find it & show commands
         if (airplaneButtonGroup.getAllChecked().size == 1) {
-            for (Airplane p : planes) {
-                if (airplaneButtonGroup.getChecked() == p.getTextButton()) {
-                    this.selected = p;
-                    changedSelection = false;
-                }
-            }
-            column2Container.setVisible(true);
-
-            planeInfoTableContainer.setVisible(true);
-
+            updatePauseButton();
             speedLabel.setText("Speed: " + selected.getSpeed());
             nextVectorLabel.setText("Next: " + (selected.getNext() != null ? selected.getNext().getName() : "null"));
             lastVectorLabel.setText("Last: " + selected.getLast().getName());
@@ -175,28 +119,22 @@ public class AirplaneCommandHandler {
             planeInfoTableContainer.setVisible(false);
             clearSelection();
         }
-        render();
     }
 
-    public void resize(int width, int height){
-        stage.getViewport().update(width, height);
+    private void updatePauseButton(){
+        if (selected.isPaused() && commandTable.getChildren().contains(pausePlaneButton, true)){
+            commandTable.removeActor(pausePlaneButton);
+            commandTable.addActorBefore(removePlaneButton, resumePlaneButton);
+        } else if (!selected.isPaused() && commandTable.getChildren().contains(resumePlaneButton, true)){
+            commandTable.removeActor(resumePlaneButton);
+            commandTable.addActorBefore(removePlaneButton, pausePlaneButton);
+        }
     }
-
-    public void dispose(){
-        stage.dispose();
-        buttonCheckedTexture.dispose();
-        buttonDownSlimTexture.dispose();
-        buttonDownTexture.dispose();
-        buttonUpSlimTexture.dispose();
-        buttonUpTexture.dispose();
-        font.dispose();
-    }
-
 
     private VerticalGroup populateNewPlaneButtons() {
         VerticalGroup t = new VerticalGroup();
 
-        TextButton generateRandomVFRInboundButton = new TextButton("New VFR Inbound", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomVFRInboundButton = new TextButton("New VFR Inbound", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomVFRInboundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -206,7 +144,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomVFRInboundButton);
 
-        TextButton generateRandomIFRInboundButton = new TextButton("New IFR Inbound", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomIFRInboundButton = new TextButton("New IFR Inbound", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomIFRInboundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -216,7 +154,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomIFRInboundButton);
 
-        TextButton generateRandomGAOutboundButton = new TextButton("New GA Departure", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomGAOutboundButton = new TextButton("New GA Departure", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomGAOutboundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -226,7 +164,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomGAOutboundButton);
 
-        TextButton generateRandomIFROutboundButton = new TextButton("New IFR Departure", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomIFROutboundButton = new TextButton("New IFR Departure", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomIFROutboundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -236,7 +174,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomIFROutboundButton);
 
-        TextButton generateRandomGAOutboundIntersectionButton = new TextButton("New GA Intersection Departure", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomGAOutboundIntersectionButton = new TextButton("New GA Intersection Departure", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomGAOutboundIntersectionButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -246,7 +184,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomGAOutboundIntersectionButton);
 
-        TextButton generateRandomVFROutboundR16Button = new TextButton("New R16 VFR Departure", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomVFROutboundR16Button = new TextButton("New R16 VFR Departure", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomVFROutboundR16Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -256,7 +194,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomVFROutboundR16Button);
 
-        TextButton generateRandomIFROutboundR16Button = new TextButton("New R16 IFR Departure", getDefaultStyle(false, Color.WHITE));
+        TextButton generateRandomIFROutboundR16Button = new TextButton("New R16 IFR Departure", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         generateRandomIFROutboundR16Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -266,7 +204,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(generateRandomIFROutboundR16Button);
 
-        TextButton removeLastPlaneButton = new TextButton("Remove Last Plane", getDefaultStyle(false, Color.FIREBRICK));
+        TextButton removeLastPlaneButton = new TextButton("Remove Last Plane", Configuration.UI.getButtonStyle(false, false, Color.FIREBRICK));
         removeLastPlaneButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -287,7 +225,7 @@ public class AirplaneCommandHandler {
         // Create table
         final VerticalGroup t = new VerticalGroup();
 
-        TextButton addTouchAndGoButton = new TextButton("Add Touch & Go", getDefaultStyle(false, Color.WHITE));
+        TextButton addTouchAndGoButton = new TextButton("Add Touch & Go", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         addTouchAndGoButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -307,7 +245,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(addTouchAndGoButton);
 
-        TextButton cancelLandingClearanceButton = new TextButton("Cancel Landing Clearance", getDefaultStyle(false, Color.WHITE));
+        TextButton cancelLandingClearanceButton = new TextButton("Cancel Landing Clearance", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         cancelLandingClearanceButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -316,7 +254,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(cancelLandingClearanceButton);
 
-        TextButton clearForTakeoffButton = new TextButton("Clear for Takeoff", getDefaultStyle(false, Color.WHITE));
+        TextButton clearForTakeoffButton = new TextButton("Clear for Takeoff", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         clearForTakeoffButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -326,7 +264,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(clearForTakeoffButton);
 
-        TextButton clearToLandButton = new TextButton("Clear to Land", getDefaultStyle(false, Color.WHITE));
+        TextButton clearToLandButton = new TextButton("Clear to Land", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         clearToLandButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -336,7 +274,7 @@ public class AirplaneCommandHandler {
         t.addActor(clearToLandButton);
 
         // Create buttons & add listeners
-        TextButton crossButton = new TextButton("Cross", getDefaultStyle(false, Color.WHITE));
+        TextButton crossButton = new TextButton("Cross", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         crossButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -346,7 +284,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(crossButton);
 
-        TextButton exitRunwayButton = new TextButton("Exit Runway", getDefaultStyle(true, Color.WHITE));
+        TextButton exitRunwayButton = new TextButton("Exit Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         exitRunwayButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -363,7 +301,7 @@ public class AirplaneCommandHandler {
         setValueButtonGroup.add(exitRunwayButton);
         t.addActor(exitRunwayButton);
 
-        TextButton extendCrosswindButton = new TextButton("Extend Crosswind", getDefaultStyle(false, Color.WHITE));
+        TextButton extendCrosswindButton = new TextButton("Extend Crosswind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendCrosswindButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -372,7 +310,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(extendCrosswindButton);
 
-        TextButton extendCrosswindOneMileButton = new TextButton("Extend Crosswind 1 Mile", getDefaultStyle(false, Color.WHITE));
+        TextButton extendCrosswindOneMileButton = new TextButton("Extend Crosswind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendCrosswindOneMileButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -381,7 +319,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(extendCrosswindOneMileButton);
 
-        TextButton extendDownwindButton = new TextButton("Extend Downwind", getDefaultStyle(false, Color.WHITE));
+        TextButton extendDownwindButton = new TextButton("Extend Downwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendDownwindButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -390,7 +328,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(extendDownwindButton);
 
-        TextButton extendDownwindOneMileButton = new TextButton("Extend Downwind 1 Mile", getDefaultStyle(false, Color.WHITE));
+        TextButton extendDownwindOneMileButton = new TextButton("Extend Downwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendDownwindOneMileButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -399,7 +337,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(extendDownwindOneMileButton);
 
-        TextButton extendUpwindButton = new TextButton("Extend Upwind", getDefaultStyle(false, Color.WHITE));
+        TextButton extendUpwindButton = new TextButton("Extend Upwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendUpwindButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -408,7 +346,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(extendUpwindButton);
 
-        TextButton extendUpwindOneMileButton = new TextButton("Extend Upwind 1 Mile", getDefaultStyle(false, Color.WHITE));
+        TextButton extendUpwindOneMileButton = new TextButton("Extend Upwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendUpwindOneMileButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -417,7 +355,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(extendUpwindOneMileButton);
 
-        TextButton goAroundButton = new TextButton("Go Around", getDefaultStyle(false, Color.WHITE));
+        TextButton goAroundButton = new TextButton("Go Around", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         goAroundButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -429,7 +367,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(goAroundButton);
 
-        TextButton lineUpButton = new TextButton("Line Up & Wait", getDefaultStyle(false, Color.WHITE));
+        TextButton lineUpButton = new TextButton("Line Up & Wait", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         lineUpButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -440,7 +378,7 @@ public class AirplaneCommandHandler {
         t.addActor(lineUpButton);
 
 
-        TextButton makeLeft360Button = new TextButton("Make Left 360", getDefaultStyle(false, Color.WHITE));
+        TextButton makeLeft360Button = new TextButton("Make Left 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         makeLeft360Button.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -449,7 +387,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(makeLeft360Button);
 
-        TextButton makeRight360Button = new TextButton("Make Right 360", getDefaultStyle(false, Color.WHITE));
+        TextButton makeRight360Button = new TextButton("Make Right 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         makeRight360Button.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -458,7 +396,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(makeRight360Button);
 
-        TextButton setDeparturePathButton = new TextButton("Set Departure Path", getDefaultStyle(true, Color.WHITE));
+        TextButton setDeparturePathButton = new TextButton("Set Departure Path", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         setDeparturePathButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -476,7 +414,7 @@ public class AirplaneCommandHandler {
         setValueButtonGroup.add(setDeparturePathButton);
         t.addActor(setDeparturePathButton);
 
-        TextButton setNextVectorButton = new TextButton("Set Next Vector", getDefaultStyle(true, Color.WHITE));
+        TextButton setNextVectorButton = new TextButton("Set Next Vector", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         setNextVectorButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -494,7 +432,7 @@ public class AirplaneCommandHandler {
         setValueButtonGroup.add(setNextVectorButton);
         t.addActor(setNextVectorButton);
 
-        TextButton setRunwayButton = new TextButton("Set Runway", getDefaultStyle(true, Color.WHITE));
+        TextButton setRunwayButton = new TextButton("Set Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         setRunwayButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -511,7 +449,7 @@ public class AirplaneCommandHandler {
         setValueButtonGroup.add(setRunwayButton);
         t.addActor(setRunwayButton);
 
-        TextButton turnBaseButton = new TextButton("Turn Base", getDefaultStyle(false, Color.WHITE));
+        TextButton turnBaseButton = new TextButton("Turn Base", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         turnBaseButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -520,9 +458,9 @@ public class AirplaneCommandHandler {
         });
         t.addActor(turnBaseButton);
 
-        final TextButton pausePlaneButton = new TextButton("Pause Plane", getDefaultStyle(false, Color.YELLOW));
-        final TextButton resumePlaneButton = new TextButton("Resume Plane", getDefaultStyle(false, Color.GREEN));
-        final TextButton removePlaneButton = new TextButton("Remove Plane", getDefaultStyle(false, Color.FIREBRICK));
+//        final TextButton pausePlaneButton = new TextButton("Pause Plane", Configuration.UI.getButtonStyle(false, false, Color.YELLOW));
+//        final TextButton resumePlaneButton = new TextButton("Resume Plane", Configuration.UI.getButtonStyle(false, false, Color.GREEN));
+//        final TextButton removePlaneButton = new TextButton("Remove Plane", Configuration.UI.getButtonStyle(false, false, Color.FIREBRICK));
 
         pausePlaneButton.addListener(new ChangeListener() {
             @Override
@@ -553,35 +491,6 @@ public class AirplaneCommandHandler {
 
         t.addActor(pausePlaneButton);
         t.addActor(removePlaneButton);
-/*
-        TextButton = new TextButton("Extend Upwind", getStyle(false));
-        .addListener(new ChangeListener(){
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-
-            }
-        });
-        t.addActor();
-
-        TextButton = new TextButton("", getDefaultStyle(false));
-        .addListener(new ChangeListener(){
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-
-            }
-        });
-        t.addActor();
-
-        TextButton = new TextButton("", getStyle(false));
-        .addListener(new ChangeListener(){
-            @Override
-            public void changed(ChangeEvent changeEvent, Actor actor) {
-
-            }
-        });
-        t.addActor();
-
- */
 
         return t;
     }
@@ -590,7 +499,7 @@ public class AirplaneCommandHandler {
         VerticalGroup t = new VerticalGroup();
 
         for (final Pattern p: Pattern.values()){
-            TextButton vectorButton = new TextButton(p.getName(), getSlimStyle(false));
+            TextButton vectorButton = new TextButton(p.getName(), Configuration.UI.getButtonStyle(false, true, Color.WHITE));
             vectorButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -606,7 +515,7 @@ public class AirplaneCommandHandler {
     private VerticalGroup populateRunways(){
         VerticalGroup t = new VerticalGroup();
 
-        TextButton R28LButton = new TextButton("Runway 28L", getDefaultStyle(false, Color.WHITE));
+        TextButton R28LButton = new TextButton("Runway 28L", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         R28LButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -615,7 +524,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(R28LButton);
 
-        TextButton R28RButton = new TextButton("Runway 28R", getDefaultStyle(false, Color.WHITE));
+        TextButton R28RButton = new TextButton("Runway 28R", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         R28RButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -631,7 +540,7 @@ public class AirplaneCommandHandler {
         VerticalGroup t = new VerticalGroup();
 
         for (final DeparturePoint p : DeparturePoint.values()){
-            TextButton departurePointButton = new TextButton(p.getName(), getDefaultStyle(false, Color.WHITE));
+            TextButton departurePointButton = new TextButton(p.getName(), Configuration.UI.getButtonStyle(false, false, Color.WHITE));
             departurePointButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -647,7 +556,7 @@ public class AirplaneCommandHandler {
     private VerticalGroup populateTaxiways(){
         VerticalGroup t = new VerticalGroup();
 
-        TextButton taxiwayDeltaButton = new TextButton("Taxiway D", getDefaultStyle(false, Color.WHITE));
+        TextButton taxiwayDeltaButton = new TextButton("Taxiway D", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         taxiwayDeltaButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -656,7 +565,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(taxiwayDeltaButton);
 
-        TextButton taxiwayEchoButton = new TextButton("Taxiway E", getDefaultStyle(false, Color.WHITE));
+        TextButton taxiwayEchoButton = new TextButton("Taxiway E", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         taxiwayEchoButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -665,7 +574,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(taxiwayEchoButton);
 
-        TextButton taxiwayFoxtrotButton = new TextButton("Taxiway F", getDefaultStyle(false, Color.WHITE));
+        TextButton taxiwayFoxtrotButton = new TextButton("Taxiway F", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         taxiwayFoxtrotButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -674,7 +583,7 @@ public class AirplaneCommandHandler {
         });
         t.addActor(taxiwayFoxtrotButton);
 
-        TextButton taxiwayGolfButton = new TextButton("Taxiway G", getDefaultStyle(false, Color.WHITE));
+        TextButton taxiwayGolfButton = new TextButton("Taxiway G", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         taxiwayGolfButton.addListener(new ChangeListener(){
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -691,12 +600,13 @@ public class AirplaneCommandHandler {
 
         Label.LabelStyle style = new Label.LabelStyle();
 
-        BitmapFont font = new BitmapFont();
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-
-        style.font = font;
+        style.font = Configuration.UI.getFont();
         style.fontColor = Color.LIGHT_GRAY;
-        style.background = new SpriteDrawable(new Sprite(buttonUpSlimTexture));
+        style.background = new SpriteDrawable(Configuration.UI.getButtonUpSlimSprite());
+        float currentWidth = style.background.getMinWidth();
+        float currentHeight = style.background.getMinHeight();
+        style.background.setMinWidth(currentWidth * Configuration.UI.getScale());
+        style.background.setMinHeight(currentHeight * Configuration.UI.getScale());
 
         locationLabel = new Label("Location: ", style);
         isAirborneLabel = new Label("Airborne: ", style);
@@ -705,7 +615,6 @@ public class AirplaneCommandHandler {
         inboundOrOutboundLabel = new Label("Type: ", style);
         touchAndGoCountLabel = new Label("T/G: ", style);
         speedLabel = new Label("Speed: ", style);
-
 
         t.addActor(locationLabel);
         t.addActor(isAirborneLabel);
@@ -718,12 +627,14 @@ public class AirplaneCommandHandler {
         return t;
     }
 
-    public void addAirplane(Airplane p){
-        TextButton button = new TextButton(p.toString(), getDefaultStyle(true, Color.WHITE));
+    public void addAirplane(final Airplane p){
+        TextButton button = new TextButton(p.toString(), Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                changedSelection = true;
+                selected = p;
+                column2Container.setVisible(true);
+                planeInfoTableContainer.setVisible(true);
             }
         });
         p.setTextButton(button);
@@ -749,37 +660,5 @@ public class AirplaneCommandHandler {
 
     public void clearSelection(){
         this.selected = null;
-    }
-
-    public Stage getStage(){
-        return this.stage;
-    }
-
-    public void setPlaneController(PlaneController c){
-        this.controller = c;
-    }
-
-    public TextButton.TextButtonStyle getDefaultStyle(boolean toggleable, Color color){
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        style.font = font;
-        style.fontColor = color;
-        style.up = new SpriteDrawable(new Sprite(buttonUpTexture));
-        style.down = new SpriteDrawable(new Sprite(buttonDownTexture));
-
-        if (toggleable)
-            style.checked = new SpriteDrawable(new Sprite(buttonCheckedTexture));
-
-        return style;
-    }
-
-    private TextButton.TextButtonStyle getSlimStyle(boolean toggleable){
-        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
-        style.font = font;
-        style.fontColor = Color.WHITE;
-        style.up = new SpriteDrawable(new Sprite(buttonUpSlimTexture));
-        style.down = new SpriteDrawable(new Sprite(buttonDownSlimTexture));
-
-        return style;
     }
 }

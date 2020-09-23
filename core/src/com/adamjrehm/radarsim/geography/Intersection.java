@@ -44,10 +44,6 @@ public class Intersection extends Pattern {
     public static final Intersection R16_HS_WEST_H = new Intersection("R16/HS WEST H",  587,689);
     public static final Intersection R16_HS_EAST_H = new Intersection("R16/HS EAST H",  595,692);
 
-    public Intersection(float x, float y){
-        super(x, y);
-    }
-
     public Intersection(String name, float x, float y){
         super(name, x, y);
     }

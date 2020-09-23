@@ -43,7 +43,7 @@ public class RadarSim extends Game {
     }
 
     private boolean loadConfiguration(){
-        boolean a = Configuration.getInstance().loadAirportConfiguration();
+        boolean a = Configuration.getInstance().init();
         boolean b = CallsignManager.getInstance().load();
 
         return a && b;

@@ -20,10 +20,6 @@ public class DeparturePoint extends Pattern{
     public static final DeparturePoint R16_RH = new DeparturePoint("Heading 160",795.5f,128);
     public static final DeparturePoint R16_SOUTH1 = new DeparturePoint("R16 " + Configuration.getSouthSIDName() + " SID", 621,100);
 
-    public DeparturePoint(float x, float y){
-        super(x, y);
-    }
-
     public DeparturePoint(String name, float x, float y){
         super(name, x, y);
     }

@@ -64,10 +64,6 @@ public class PatternDrawable extends Pattern{
         batch.draw(PATTERN_ENTRY_ONE.sprite, PATTERN_ENTRY_ONE.sprite.getX(), PATTERN_ENTRY_ONE.sprite.getY());
     }
 
-    public static void resize(int width, int height){
-
-    }
-
     public static void dispose(){
         PATTERN_ENTRY_FIVE.getSprite().getTexture().dispose();
         PATTERN_ENTRY_FOUR.getSprite().getTexture().dispose();

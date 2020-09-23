@@ -1681,6 +1681,10 @@ public class Airplane extends Sprite {
         paused = false;
     }
 
+    public boolean isPaused(){
+        return paused;
+    }
+
     public Pattern getFinalDepartureInstruction(){
         if (this.finalDepartureInstruction != null)
             return this.finalDepartureInstruction;

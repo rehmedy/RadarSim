@@ -3,7 +3,7 @@ package com.adamjrehm.radarsim.scenes;
 import com.adamjrehm.radarsim.RadarSim;
 import com.adamjrehm.radarsim.geography.PatternDrawable;
 import com.adamjrehm.radarsim.helpers.GameInfo;
-import com.adamjrehm.radarsim.huds.SimInfo;
+import com.adamjrehm.radarsim.huds.GameplayUI;
 import com.adamjrehm.radarsim.planes.PlaneController;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -22,15 +22,13 @@ public class Gameplay implements Screen {
 
     private RadarSim sim;
 
-    private PlaneController planeController;
+    private GameplayUI ui;
 
-    private SimInfo simInfo;
+    private PlaneController planeController;
 
     private Texture bg, radarimg;
 
-    private float deltaTotal = 0, d = 0;
-    private int frameCounter = 0;
-    private String timeElapsed;
+    private float d = 0, pauseTime = 0;
 
     private final long START_TIME_MILLIS = System.currentTimeMillis();
 
@@ -45,13 +43,13 @@ public class Gameplay implements Screen {
         radarimg = new Texture(GameInfo.RADAR_IMAGE_PATH);
         radarimg.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
-        planeController = new PlaneController(sim);
-        simInfo = new SimInfo(sim, this);
+        planeController = new PlaneController(this);
+
+        ui = new GameplayUI(this);
 
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(planeController);
-        multiplexer.addProcessor(planeController.getCommandHandler().getStage());
-        multiplexer.addProcessor(simInfo.getStage());
+        multiplexer.addProcessor(ui.getStage());
 
         Gdx.input.setInputProcessor(multiplexer);
     }
@@ -75,25 +73,24 @@ public class Gameplay implements Screen {
         planeController.render(sim.getBatch());
         sim.getBatch().end();
 
-        planeController.getCommandHandler().render();
-        planeController.getStripHandler().render();
-        simInfo.render();
+        ui.render();
 
-
-        // Printing FPS
+        // Statistics
         d += Gdx.graphics.getDeltaTime();
         if (d >= 1) {
-            System.out.println(Gdx.graphics.getFramesPerSecond() + " FPS // " + getTimeElapsed() + " elapsed // " + planeController.getOperationsCounter() + " operations completed");
+            System.out.println(Gdx.graphics.getFramesPerSecond() + " FPS // " + getTotalTimeElapsed() + " elapsed // " + planeController.getOperationsCounter() + " operations completed");
             d = 0;
+        }
+
+        if (planeController.isPaused()){
+            pauseTime += Gdx.graphics.getDeltaTime();
         }
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        planeController.getCommandHandler().resize(width, height);
-        planeController.getStripHandler().resize(width, height);
-        //planeController.resize(width, height);
+        ui.resize(width, height);
     }
 
     @Override
@@ -123,8 +120,26 @@ public class Gameplay implements Screen {
         return this.planeController;
     }
 
-    public String getTimeElapsed(){
+    public RadarSim getSim(){
+        return this.sim;
+    }
+
+    public GameplayUI getUI(){
+        return this.ui;
+    }
+
+    public Viewport getViewport(){
+        return this.viewport;
+    }
+
+    public String getTotalTimeElapsed(){
         long time = (System.currentTimeMillis() - START_TIME_MILLIS) / 1000;
+        return time / 60 + ":" + ((time % 60) < 10 ? "0" + time % 60 : time % 60);
+    }
+
+    public String getRunningTime(){
+        double t = ((System.currentTimeMillis() - START_TIME_MILLIS) / 1000d) - pauseTime;
+        int time = (int)t;
         return time / 60 + ":" + ((time % 60) < 10 ? "0" + time % 60 : time % 60);
     }
 }

@@ -1,25 +1,20 @@
 package com.adamjrehm.radarsim.planes;
 
-import com.adamjrehm.radarsim.RadarSim;
 import com.adamjrehm.radarsim.config.CallsignManager;
-import com.adamjrehm.radarsim.geography.PatternDrawable;
-import com.adamjrehm.radarsim.huds.AirplaneCommandHandler;
 import com.adamjrehm.radarsim.geography.Intersection;
 import com.adamjrehm.radarsim.geography.Pattern;
-import com.adamjrehm.radarsim.huds.StripHandler;
+import com.adamjrehm.radarsim.geography.PatternDrawable;
+import com.adamjrehm.radarsim.scenes.Gameplay;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class PlaneController implements InputProcessor {
-    private RadarSim sim;
+    private Gameplay gameplay;
 
     private Array<Airplane> planelist;
-
-    private AirplaneCommandHandler commandHandler;
-
-    private StripHandler stripHandler;
 
     private Pattern lastUsedInboundStartPoint;
 
@@ -31,11 +26,10 @@ public class PlaneController implements InputProcessor {
 
     private int operationsCounter = 0;
 
-    public PlaneController(RadarSim sim) {
-        this.sim = sim;
+    public PlaneController(Gameplay gameplay) {
+        this.gameplay = gameplay;
 
         planelist = new Array<>();
-        commandHandler = new AirplaneCommandHandler(sim, this);
 
         tempCommercialPlaneList = CallsignManager.getCommercialPlaneCallsigns();
         tempGAPlaneList = CallsignManager.getGAPlaneCallsigns();
@@ -45,8 +39,6 @@ public class PlaneController implements InputProcessor {
 
         departureList = new Array<>();
         populateDepartures(4);
-
-        stripHandler = new StripHandler(this);
     }
 
     private void populateArrivals(int count) {
@@ -82,7 +74,7 @@ public class PlaneController implements InputProcessor {
     public Airplane createNewPlane(String callsign, PlaneType type, Pattern startPoint, int numLandings) {
         Airplane p = new Airplane(callsign, type, startPoint, numLandings);
         planelist.add(p);
-        commandHandler.addAirplane(p);
+        gameplay.getUI().getAirplaneCommandHandler().addAirplane(p);
         operationsCounter++;
         return p;
     }
@@ -98,7 +90,7 @@ public class PlaneController implements InputProcessor {
     public Airplane createNewPlane(String callsign, PlaneType type, FPLType fpl, Intersection startPoint) {
         Airplane p = new Airplane(callsign, type, fpl, startPoint);
         planelist.add(p);
-        commandHandler.addAirplane(p);
+        gameplay.getUI().getAirplaneCommandHandler().addAirplane(p);
         operationsCounter++;
         return p;
     }
@@ -129,7 +121,7 @@ public class PlaneController implements InputProcessor {
 
     public void spawn(Airplane p){
         planelist.add(p);
-        commandHandler.addAirplane(p);
+        gameplay.getUI().getAirplaneCommandHandler().addAirplane(p);
         operationsCounter++;
     }
 
@@ -144,19 +136,11 @@ public class PlaneController implements InputProcessor {
 
             p.render(batch);
 
-            // Unnecessary extra code
-//            if (p.getTextButton().isChecked())
-//                commandHandler.select(p);
-
             if (p.isGone()) {
-//                dispose(p);
-//                planelist.removeValue(p, false);
-//                commandHandler.removeAirplane(p);
-//                stripHandler.update();
                 removePlane(p);
             }
         }
-        commandHandler.update(planelist);
+        gameplay.getUI().getAirplaneCommandHandler().update(planelist);
     }
 
     public void pause(){
@@ -167,6 +151,10 @@ public class PlaneController implements InputProcessor {
     public void resume(){
         simPaused = false;
         System.out.println("Simulation resumed.");
+    }
+
+    public boolean isPaused(){
+        return simPaused;
     }
 
     public void pause(Airplane p){
@@ -195,12 +183,6 @@ public class PlaneController implements InputProcessor {
         for (Airplane p : planelist) {
             dispose(p);
         }
-        commandHandler.dispose();
-        stripHandler.dispose();
-    }
-
-    public Array<Airplane> getPlanelist(){
-        return this.planelist;
     }
 
     /**
@@ -324,20 +306,19 @@ public class PlaneController implements InputProcessor {
         if (planelist.size > 0) {
             Airplane p = planelist.get(planelist.size - 1);
             dispose(p);
-            commandHandler.removeAirplane(p);
+            gameplay.getUI().getAirplaneCommandHandler().removeAirplane(p);
             planelist.removeIndex(planelist.size - 1);
 
             if (arrivalList.contains(p, false)) {
                 arrivalList.removeValue(p, false);
                 populateArrivals(1);
-                stripHandler.updateArrivals();
             }
             else if (departureList.contains(p, false)) {
                 departureList.removeValue(p, false);
                 populateDepartures(1);
-                stripHandler.updateDepartures();
-            }
 
+            }
+            gameplay.getUI().getStripHandler().update();
 
             return true;
         }
@@ -346,26 +327,20 @@ public class PlaneController implements InputProcessor {
 
     public void removePlane(Airplane p){
         dispose(p);
-        commandHandler.removeAirplane(p);
+        gameplay.getUI().getAirplaneCommandHandler().removeAirplane(p);
         planelist.removeValue(p, false);
 
         if (arrivalList.contains(p, false)) {
             arrivalList.removeValue(p, false);
             populateArrivals(1);
-            stripHandler.updateArrivals();
+            gameplay.getUI().getStripHandler().updateArrivals();
         }
         else if (departureList.contains(p, false)) {
             departureList.removeValue(p, false);
             populateDepartures(1);
-            stripHandler.updateDepartures();
+            gameplay.getUI().getStripHandler().updateDepartures();
         }
     }
-
-    public AirplaneCommandHandler getCommandHandler(){
-        return this.commandHandler;
-    }
-
-    public StripHandler getStripHandler(){ return this.stripHandler; }
 
     @Override
     public boolean keyDown(int keycode) {
@@ -384,17 +359,17 @@ public class PlaneController implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Vector2 v = commandHandler.getStage().getViewport().unproject(new Vector2(screenX, screenY));
+        Vector2 v = gameplay.getViewport().unproject(new Vector2(screenX, screenY));
         for (Airplane p: planelist){
             if (p.contains(v.x, v.y)){
-                commandHandler.select(p);
+                gameplay.getUI().getAirplaneCommandHandler().select(p);
                 return true;
             }
         }
 
         // If we click anywhere on the radar screen that isn't an aircraft, deselect any selected buttons
-        if (screenX < commandHandler.getStage().getViewport().getScreenWidth() / 2)
-            commandHandler.deselectAll();
+        if (screenX < Gdx.graphics.getWidth() / 2)
+            gameplay.getUI().getAirplaneCommandHandler().deselectAll();
         return false;
     }
 

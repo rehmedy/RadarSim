@@ -40,13 +40,6 @@ public class Pattern {
     private String name;
     private Vector2 vector;
 
-    public Pattern(){}
-
-    public Pattern(float x, float y){
-        this.name = "";
-        this.vector = new Vector2(x, y);
-    }
-
     public Pattern(String name, float x, float y){
         this.name = name;
         this.vector = new Vector2(x, y);
@@ -61,20 +54,12 @@ public class Pattern {
         this.vector = v;
     }
 
-    public Pattern(String s){
-        this.name = s;
-    }
-
     public Vector2 getVector2(){
         return vector;
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name){
-        this.name = name;
     }
 
     public float getX() {
