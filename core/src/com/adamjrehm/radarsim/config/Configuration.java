@@ -9,15 +9,17 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.PropertiesConfiguration;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 public class Configuration {
 
     private static final Configuration INSTANCE = new Configuration();
+
+    private final String configFilePath = "./configs/config.properties";
 
     private static String airportName,
             patternEntryOneName,
@@ -58,42 +60,73 @@ public class Configuration {
     public boolean loadAirportConfiguration() {
         System.out.println("Loading airport configuration...");
 
-        String configFilePath = "./configs/config.properties";
-
-        Properties prop = new Properties();
+        //Properties prop = new Properties();
 
         if (new File(configFilePath).exists()) {
             try {
-                FileInputStream inputStream = new FileInputStream(new File(configFilePath));
-                prop.load(inputStream);
+                PropertiesConfiguration prop = new PropertiesConfiguration(new File(configFilePath));
+//                FileInputStream inputStream = new FileInputStream(new File(configFilePath));
+//                prop.load(inputStream);
+//                inputStream.close();
 
-                airportName = prop.getProperty("AIRPORT_NAME");
-                patternEntryOneName = prop.getProperty("PATTERN_ENTRY_ONE_NAME");
-                patternEntryTwoName = prop.getProperty("PATTERN_ENTRY_TWO_NAME");
-                patternEntryThreeName = prop.getProperty("PATTERN_ENTRY_THREE_NAME");
-                patternEntryFourName = prop.getProperty("PATTERN_ENTRY_FOUR_NAME");
-                patternEntryFiveName = prop.getProperty("PATTERN_ENTRY_FIVE_NAME");
-                northSIDName = prop.getProperty("NORTH_SID_NAME");
-                southSIDName = prop.getProperty("SOUTH_SID_NAME");
+                updateOldConfigs(prop);
 
-                patternEntryOneX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_ONE_X"));
-                patternEntryOneY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_ONE_Y"));
-                patternEntryTwoX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_TWO_X"));
-                patternEntryTwoY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_TWO_Y"));
-                patternEntryThreeX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_THREE_X"));
-                patternEntryThreeY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_THREE_Y"));
-                patternEntryFourX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FOUR_X"));
-                patternEntryFourY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FOUR_Y"));
-                patternEntryFiveX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FIVE_X"));
-                patternEntryFiveY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FIVE_Y"));
+                airportName = prop.getString("AIRPORT_NAME");
+                patternEntryOneName = prop.getString("PATTERN_ENTRY_ONE_NAME");
+                patternEntryTwoName = prop.getString("PATTERN_ENTRY_TWO_NAME");
+                patternEntryThreeName = prop.getString("PATTERN_ENTRY_THREE_NAME");
+                patternEntryFourName = prop.getString("PATTERN_ENTRY_FOUR_NAME");
+                patternEntryFiveName = prop.getString("PATTERN_ENTRY_FIVE_NAME");
+                northSIDName = prop.getString("NORTH_SID_NAME");
+                southSIDName = prop.getString("SOUTH_SID_NAME");
 
-                windowWidth = Integer.parseInt(prop.getProperty("WINDOW_WIDTH"));
-                windowHeight = Integer.parseInt(prop.getProperty("WINDOW_HEIGHT"));
-                uiScale = Integer.parseInt(prop.getProperty("UI_SCALE"));
-                radarUpdateSpeed = Integer.parseInt(prop.getProperty("RADAR_UPDATE_SPEED"));
-                planeAccelerationRate = Integer.parseInt(prop.getProperty("ACCELERATION_RATE"));
-                planeDecelerationRate = Integer.parseInt(prop.getProperty("DECELERATION_RATE"));
-            } catch (IOException e) {
+                patternEntryOneX = (prop.getInt("PATTERN_ENTRY_ONE_X"));
+                patternEntryOneY = (prop.getInt("PATTERN_ENTRY_ONE_Y"));
+                patternEntryTwoX = (prop.getInt("PATTERN_ENTRY_TWO_X"));
+                patternEntryTwoY = (prop.getInt("PATTERN_ENTRY_TWO_Y"));
+                patternEntryThreeX = (prop.getInt("PATTERN_ENTRY_THREE_X"));
+                patternEntryThreeY = (prop.getInt("PATTERN_ENTRY_THREE_Y"));
+                patternEntryFourX = (prop.getInt("PATTERN_ENTRY_FOUR_X"));
+                patternEntryFourY = (prop.getInt("PATTERN_ENTRY_FOUR_Y"));
+                patternEntryFiveX = (prop.getInt("PATTERN_ENTRY_FIVE_X"));
+                patternEntryFiveY = (prop.getInt("PATTERN_ENTRY_FIVE_Y"));
+
+                windowWidth = (prop.getInt("WINDOW_WIDTH"));
+                windowHeight = (prop.getInt("WINDOW_HEIGHT"));
+                radarUpdateSpeed = (prop.getInt("RADAR_UPDATE_SPEED"));
+                planeAccelerationRate = (prop.getInt("ACCELERATION_RATE"));
+                planeDecelerationRate = (prop.getInt("DECELERATION_RATE"));
+
+                uiScale = (prop.getInt("UI_SCALE"));
+
+//                airportName = prop.getProperty("AIRPORT_NAME");
+//                patternEntryOneName = prop.getProperty("PATTERN_ENTRY_ONE_NAME");
+//                patternEntryTwoName = prop.getProperty("PATTERN_ENTRY_TWO_NAME");
+//                patternEntryThreeName = prop.getProperty("PATTERN_ENTRY_THREE_NAME");
+//                patternEntryFourName = prop.getProperty("PATTERN_ENTRY_FOUR_NAME");
+//                patternEntryFiveName = prop.getProperty("PATTERN_ENTRY_FIVE_NAME");
+//                northSIDName = prop.getProperty("NORTH_SID_NAME");
+//                southSIDName = prop.getProperty("SOUTH_SID_NAME");
+//
+//                patternEntryOneX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_ONE_X"));
+//                patternEntryOneY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_ONE_Y"));
+//                patternEntryTwoX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_TWO_X"));
+//                patternEntryTwoY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_TWO_Y"));
+//                patternEntryThreeX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_THREE_X"));
+//                patternEntryThreeY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_THREE_Y"));
+//                patternEntryFourX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FOUR_X"));
+//                patternEntryFourY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FOUR_Y"));
+//                patternEntryFiveX = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FIVE_X"));
+//                patternEntryFiveY = Integer.parseInt(prop.getProperty("PATTERN_ENTRY_FIVE_Y"));
+//
+//                windowWidth = Integer.parseInt(prop.getProperty("WINDOW_WIDTH"));
+//                windowHeight = Integer.parseInt(prop.getProperty("WINDOW_HEIGHT"));
+//                radarUpdateSpeed = Integer.parseInt(prop.getProperty("RADAR_UPDATE_SPEED"));
+//                planeAccelerationRate = Integer.parseInt(prop.getProperty("ACCELERATION_RATE"));
+//                planeDecelerationRate = Integer.parseInt(prop.getProperty("DECELERATION_RATE"));
+//
+//                uiScale = Integer.parseInt(prop.getProperty("UI_SCALE"));
+            } catch (NullPointerException | ConfigurationException e) {
                 e.printStackTrace();
             }
             return true;
@@ -103,6 +136,21 @@ public class Configuration {
             return false;
         }
 
+    }
+
+    private void updateOldConfigs(PropertiesConfiguration prop) throws ConfigurationException {
+        boolean updated = false;
+
+        // Check if any new properties don't exist, write if not
+        if (prop.getProperty("UI_SCALE") == null){
+            prop.addProperty("UI_SCALE", "2");
+            updated = true;
+        }
+
+        // Store values & close output stream
+        if (updated){
+            prop.save();
+        }
     }
 
     public static String getAirportName() {

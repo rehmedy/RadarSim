@@ -41,6 +41,7 @@ allprojects {
 //        compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version: '5prealpha-SNAPSHOT'
 //        compile group: 'edu.cmu.sphinx', name: 'sphinx4-data', version: '5prealpha-SNAPSHOT'
         compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        compile group: 'commons-configuration', name: 'commons-configuration', version: '1.10'
     }
 
 }
