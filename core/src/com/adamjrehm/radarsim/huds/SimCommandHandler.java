@@ -4,33 +4,25 @@ import com.adamjrehm.radarsim.config.Configuration;
 import com.adamjrehm.radarsim.planes.PlaneController;
 import com.adamjrehm.radarsim.scenes.Gameplay;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 
-public class SimCommandHandler extends Table{
+public class SimCommandHandler extends Table {
 
     private Gameplay gameplay;
     private PlaneController controller;
-
-    private Texture buttonUpTexture = new Texture("images/buttonup.png"),
-    buttonDownTexture = new Texture("images/buttondown.png");
 
     private Container<VerticalGroup> container;
     private VerticalGroup simInfoVerticalGroup;
 
     private Label operationsLabel, timeElapsedLabel, runningTimeLabel;
 
-    public SimCommandHandler(Gameplay gameplay){
+    public SimCommandHandler(Gameplay gameplay) {
         this.gameplay = gameplay;
         this.controller = gameplay.getPlaneController();
-
-        this.buttonDownTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        this.buttonUpTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         this.simInfoVerticalGroup = populateSimInfoAndControls();
 
@@ -40,23 +32,18 @@ public class SimCommandHandler extends Table{
         add(container);
     }
 
-    public void update(){
+    public void update() {
         operationsLabel.setText("Operations: " + controller.getOperationsCounter());
         timeElapsedLabel.setText("Total Time Elapsed: " + gameplay.getTotalTimeElapsed());
         runningTimeLabel.setText("Running Time: " + gameplay.getRunningTime());
     }
 
-    public void dispose(){
-        buttonUpTexture.dispose();
-        buttonDownTexture.dispose();
-    }
-
-    private VerticalGroup populateSimInfoAndControls(){
+    private VerticalGroup populateSimInfoAndControls() {
         final VerticalGroup t = new VerticalGroup();
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
 
-        labelStyle.background = new SpriteDrawable(new Sprite(buttonUpTexture));
+        labelStyle.background = new SpriteDrawable(Configuration.UI.getButtonUpSprite());
         float currentWidth = labelStyle.background.getMinWidth();
         float currentHeight = labelStyle.background.getMinHeight();
         labelStyle.background.setMinWidth(currentWidth * Configuration.UI.getScale());
@@ -81,7 +68,7 @@ public class SimCommandHandler extends Table{
         final TextButton pauseButton = new TextButton("Pause", Configuration.UI.getButtonStyle(false, false, Color.YELLOW));
         final TextButton resumeButton = new TextButton("Resume", Configuration.UI.getButtonStyle(false, false, Color.GREEN));
 
-        pauseButton.addListener(new ChangeListener(){
+        pauseButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 controller.pause();

@@ -42,8 +42,8 @@ public class PlaneController implements InputProcessor {
     }
 
     private void populateArrivals(int count) {
-        for (int i = 0; i != count; i++){
-            int randomIndex = (int)(Math.random() * (tempCommercialPlaneList.size - 1));
+        for (int i = 0; i != count; i++) {
+            int randomIndex = (int) (Math.random() * (tempCommercialPlaneList.size - 1));
             arrivalList.add(createNewUnspawnedArrival(tempCommercialPlaneList.get(randomIndex).getCallsign(),
                     tempCommercialPlaneList.get(randomIndex).getType(),
                     Pattern.ILS,
@@ -52,7 +52,7 @@ public class PlaneController implements InputProcessor {
         }
     }
 
-    private void populateDepartures(int count){
+    private void populateDepartures(int count) {
         for (int i = 0; i != count; i++) {
             int randomIndex = (int) (Math.random() * (tempCommercialPlaneList.size - 1));
             departureList.add(createNewUnspawnedDeparture(tempCommercialPlaneList.get(randomIndex).getCallsign(),
@@ -65,6 +65,7 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Create a new inbound plane
+     *
      * @param callsign
      * @param type
      * @param startPoint
@@ -81,6 +82,7 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Create a new outbound plane
+     *
      * @param callsign
      * @param type
      * @param fpl
@@ -97,6 +99,7 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Create a new outbound plane UNSPAWNED
+     *
      * @param callsign
      * @param type
      * @param fpl
@@ -109,6 +112,7 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Create a new inbound plane UNSPAWNED
+     *
      * @param callsign
      * @param type
      * @param startPoint
@@ -119,7 +123,7 @@ public class PlaneController implements InputProcessor {
         return new Airplane(callsign, type, startPoint, numLandings);
     }
 
-    public void spawn(Airplane p){
+    public void spawn(Airplane p) {
         planelist.add(p);
         gameplay.getUI().getAirplaneCommandHandler().addAirplane(p);
         operationsCounter++;
@@ -127,6 +131,7 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Update and render the planes in our sim
+     *
      * @param batch Spritebatch in use
      */
     public void render(SpriteBatch batch) {
@@ -143,43 +148,43 @@ public class PlaneController implements InputProcessor {
         gameplay.getUI().getAirplaneCommandHandler().update(planelist);
     }
 
-    public void pause(){
+    public void pause() {
         simPaused = true;
         System.out.println("Simulation paused.");
     }
 
-    public void resume(){
+    public void resume() {
         simPaused = false;
         System.out.println("Simulation resumed.");
     }
 
-    public boolean isPaused(){
+    public boolean isPaused() {
         return simPaused;
     }
 
-    public void pause(Airplane p){
+    public void pause(Airplane p) {
         p.pause();
         System.out.println(p.getCallsign() + ": Paused.");
     }
 
-    public void resume(Airplane p){
+    public void resume(Airplane p) {
         p.resume();
         System.out.println(p.getCallsign() + ": Resumed.");
     }
 
     /**
      * Dispose of a particular airplane's textures
+     *
      * @param p Airplane
      */
-    public void dispose(Airplane p){
-        p.getTexture().dispose();
-        p.getLine().getTexture().dispose();
+    public void dispose(Airplane p) {
+        p.dispose();
     }
 
     /**
      * Dispose of all airplanes
      */
-    public void dispose(){
+    public void dispose() {
         for (Airplane p : planelist) {
             dispose(p);
         }
@@ -188,7 +193,7 @@ public class PlaneController implements InputProcessor {
     /**
      * Generates a random IFR Inbound plane on the R28R ILS Approach
      */
-    public void generateRandomIFRInbound(){
+    public void generateRandomIFRInbound() {
         for (Airplane p : arrivalList)
             if (!planelist.contains(p, false)) {
                 spawn(p);
@@ -199,8 +204,8 @@ public class PlaneController implements InputProcessor {
     /**
      * Generates a random VFR Inbound plane at a random pattern entry point
      */
-    public void generateRandomVFRInbound(){
-        int index = (int)(Math.random() * (tempGAPlaneList.size - 1));
+    public void generateRandomVFRInbound() {
+        int index = (int) (Math.random() * (tempGAPlaneList.size - 1));
 
         createNewPlane(tempGAPlaneList.get(index).getCallsign(),
                 tempGAPlaneList.get(index).getType(),
@@ -213,9 +218,10 @@ public class PlaneController implements InputProcessor {
     /**
      * Gets a random usable pattern entry, skipping the last used pattern entry point
      * so planes do not spawn overlapping
+     *
      * @return Returns usable pattern point
      */
-    private Pattern getRandomUsablePatternEntry(){
+    private Pattern getRandomUsablePatternEntry() {
         Array<Pattern> points = new Array<>(new Pattern[]{
                 PatternDrawable.PATTERN_ENTRY_ONE,
                 PatternDrawable.PATTERN_ENTRY_TWO,
@@ -228,7 +234,7 @@ public class PlaneController implements InputProcessor {
         });
 
         points.removeValue(lastUsedInboundStartPoint, true);
-        Pattern p = points.get((int)(Math.random() * (points.size - 1)));
+        Pattern p = points.get((int) (Math.random() * (points.size - 1)));
 
         lastUsedInboundStartPoint = p;
 
@@ -237,10 +243,10 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Generates a random commercial departure
-     *
+     * <p>
      * All commercial departures start at R28R/A
      */
-    public void generateRandomCommercialOutbound(){
+    public void generateRandomCommercialOutbound() {
         for (Airplane p : departureList)
             if (!planelist.contains(p, false)) {
                 spawn(p);
@@ -250,14 +256,15 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Generates a random General Aviation departure
-     *
+     * <p>
      * Can spawn at either 28R/A or C
+     *
      * @param isIntersectionDeparture If true, spawns at 28R/C
      */
-    public void generateRandomGAOutbound(boolean isIntersectionDeparture){
-        int index = (int)(Math.random() * (tempGAPlaneList.size - 1));
+    public void generateRandomGAOutbound(boolean isIntersectionDeparture) {
+        int index = (int) (Math.random() * (tempGAPlaneList.size - 1));
 
-        if (isIntersectionDeparture){
+        if (isIntersectionDeparture) {
             createNewPlane(tempGAPlaneList.get(index).getCallsign(),
                     tempGAPlaneList.get(index).getType(),
                     FPLType.VFR,
@@ -274,15 +281,16 @@ public class PlaneController implements InputProcessor {
 
     /**
      * Generates a random R16 departure
-     *
+     * <p>
      * All R16 departures are GA aircraft
+     *
      * @param isIFR If true, spawns an IFR aircraft, otherwise uses VFR
      */
-    public void generateRandom16Outbound(boolean isIFR){
-        int index = (int)(Math.random() * (tempGAPlaneList.size - 1));
+    public void generateRandom16Outbound(boolean isIFR) {
+        int index = (int) (Math.random() * (tempGAPlaneList.size - 1));
         Intersection startPoint = (Math.random() >= .5f ? Intersection.R16_HS_WEST_H : Intersection.R16_HS_EAST_H);
 
-        if (isIFR){
+        if (isIFR) {
             createNewPlane(tempGAPlaneList.get(index).getCallsign(),
                     tempGAPlaneList.get(index).getType(),
                     FPLType.IFR,
@@ -302,7 +310,7 @@ public class PlaneController implements InputProcessor {
      *
      * @return Returns true if successful
      */
-    public boolean removeLastPlane(){
+    public boolean removeLastPlane() {
         if (planelist.size > 0) {
             Airplane p = planelist.get(planelist.size - 1);
             dispose(p);
@@ -312,8 +320,7 @@ public class PlaneController implements InputProcessor {
             if (arrivalList.contains(p, false)) {
                 arrivalList.removeValue(p, false);
                 populateArrivals(1);
-            }
-            else if (departureList.contains(p, false)) {
+            } else if (departureList.contains(p, false)) {
                 departureList.removeValue(p, false);
                 populateDepartures(1);
 
@@ -325,7 +332,7 @@ public class PlaneController implements InputProcessor {
         return false;
     }
 
-    public void removePlane(Airplane p){
+    public void removePlane(Airplane p) {
         dispose(p);
         gameplay.getUI().getAirplaneCommandHandler().removeAirplane(p);
         planelist.removeValue(p, false);
@@ -334,8 +341,7 @@ public class PlaneController implements InputProcessor {
             arrivalList.removeValue(p, false);
             populateArrivals(1);
             gameplay.getUI().getStripHandler().updateArrivals();
-        }
-        else if (departureList.contains(p, false)) {
+        } else if (departureList.contains(p, false)) {
             departureList.removeValue(p, false);
             populateDepartures(1);
             gameplay.getUI().getStripHandler().updateDepartures();
@@ -360,8 +366,8 @@ public class PlaneController implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 v = gameplay.getViewport().unproject(new Vector2(screenX, screenY));
-        for (Airplane p: planelist){
-            if (p.contains(v.x, v.y)){
+        for (Airplane p : planelist) {
+            if (p.contains(v.x, v.y)) {
                 gameplay.getUI().getAirplaneCommandHandler().select(p);
                 return true;
             }
@@ -393,15 +399,15 @@ public class PlaneController implements InputProcessor {
         return false;
     }
 
-    public int getOperationsCounter(){
+    public int getOperationsCounter() {
         return this.operationsCounter;
     }
 
-    public Array<Airplane> getArrivalList(){
+    public Array<Airplane> getArrivalList() {
         return this.arrivalList;
     }
 
-    public Array<Airplane> getDepartureList(){
+    public Array<Airplane> getDepartureList() {
         return this.departureList;
     }
 }

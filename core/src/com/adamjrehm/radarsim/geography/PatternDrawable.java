@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class PatternDrawable extends Pattern{
+public class PatternDrawable extends Pattern {
 
     private static final Texture defaultPatternCrossTexture = new Texture("images/patterncross.png");
 
@@ -40,23 +40,23 @@ public class PatternDrawable extends Pattern{
     /**
      * Drawable pattern takes a sprite in constructor
      *
-     * @param s Sprite to draw on the screen
+     * @param s    Sprite to draw on the screen
      * @param name Name of the pattern point
-     * @param x X coordinate of the pattern point
-     * @param y Y coordinate of the pattern point
+     * @param x    X coordinate of the pattern point
+     * @param y    Y coordinate of the pattern point
      */
-    private PatternDrawable(Sprite s, String name, float x, float y){
+    private PatternDrawable(Sprite s, String name, float x, float y) {
         super(name, x, y);
         this.sprite = s;
         this.sprite.setPosition(x - (sprite.getWidth() / 2), y - (sprite.getWidth() / 2));
         this.sprite.getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
     }
 
-    public Sprite getSprite(){
+    public Sprite getSprite() {
         return this.sprite;
     }
 
-    public static void drawPatternPoints(SpriteBatch batch){
+    public static void drawPatternPoints(SpriteBatch batch) {
         batch.draw(PATTERN_ENTRY_FIVE.sprite, PATTERN_ENTRY_FIVE.sprite.getX(), PATTERN_ENTRY_FIVE.sprite.getY());
         batch.draw(PATTERN_ENTRY_FOUR.sprite, PATTERN_ENTRY_FOUR.sprite.getX(), PATTERN_ENTRY_FOUR.sprite.getY());
         batch.draw(PATTERN_ENTRY_THREE.sprite, PATTERN_ENTRY_THREE.sprite.getX(), PATTERN_ENTRY_THREE.sprite.getY());
@@ -64,7 +64,7 @@ public class PatternDrawable extends Pattern{
         batch.draw(PATTERN_ENTRY_ONE.sprite, PATTERN_ENTRY_ONE.sprite.getX(), PATTERN_ENTRY_ONE.sprite.getY());
     }
 
-    public static void dispose(){
+    public static void dispose() {
         PATTERN_ENTRY_FIVE.getSprite().getTexture().dispose();
         PATTERN_ENTRY_FOUR.getSprite().getTexture().dispose();
         PATTERN_ENTRY_THREE.getSprite().getTexture().dispose();

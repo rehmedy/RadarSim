@@ -51,7 +51,7 @@ public class Airplane extends Sprite {
         getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         this.callsign = callsign;
         this.type = type;
-        this.speed = (float)type.getSpeed();
+        this.speed = (float) type.getSpeed();
         this.last = startPoint;
         this.landings = landings;
         line = new Sprite(new Texture("images/greenbox.png"));
@@ -63,8 +63,7 @@ public class Airplane extends Sprite {
         if (startPoint == Pattern.ILS) {
             this.fpl = FPLType.IFR;
             this.rwy = Runway.R28R;
-        }
-        else {
+        } else {
             this.fpl = FPLType.VFR;
             this.rwy = Runway.R28L;
         }
@@ -82,7 +81,7 @@ public class Airplane extends Sprite {
      * @param fpl        Flightplan type defined by static FPLType object
      * @param startPoint Intersection where airplane should spawn in on the scope
      */
-    protected Airplane(String callsign, PlaneType type, FPLType fpl, Intersection startPoint){
+    protected Airplane(String callsign, PlaneType type, FPLType fpl, Intersection startPoint) {
         super(new Texture(GameInfo.TARGET_IMAGE_PATH));
         getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         this.callsign = callsign;
@@ -122,7 +121,7 @@ public class Airplane extends Sprite {
      * @param startPoint
      * @param touchAndGoes
      */
-    protected Airplane(String callsign, PlaneType type, Intersection startPoint, int touchAndGoes){
+    protected Airplane(String callsign, PlaneType type, Intersection startPoint, int touchAndGoes) {
         super(new Texture(GameInfo.TARGET_IMAGE_PATH));
         getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         this.callsign = callsign;
@@ -368,9 +367,15 @@ public class Airplane extends Sprite {
         }
     }
 
-    public void render(SpriteBatch batch){
+    public void render(SpriteBatch batch) {
         drawDataTag(batch);
         batch.draw(this, getX(), getY());
+    }
+
+    public void dispose() {
+        this.getTexture().dispose();
+        line.getTexture().dispose();
+        font.dispose();
     }
 
     /**
@@ -410,9 +415,9 @@ public class Airplane extends Sprite {
         else if (Pattern.BASE_START.equals(last)) {
             if (extendDownwind == 0)
                 //if (rwy == Runway.R28L)
-                    next = Pattern.R28L_ONE_MILE_FINAL;
+                next = Pattern.R28L_ONE_MILE_FINAL;
                 //else if (rwy == Runway.R28R)
-                    //next = Pattern.R28R_ONE_MILE_FINAL;
+                //next = Pattern.R28R_ONE_MILE_FINAL;
             else
                 next = calculateNextVector(Pattern.R28L_TWO_MILE_FINAL,
                         Pattern.R28L_ONE_MILE_FINAL,
@@ -432,7 +437,7 @@ public class Airplane extends Sprite {
                 next = Pattern.R28R_TWO_MILE_FINAL;
         } else if (Pattern.R28L_ONE_MILE_FINAL.equals(last) || Pattern.R28L_TWO_MILE_FINAL.equals(last) || Pattern.R28L_FIVE_MILE_FINAL.equals(last)) {
             next = Pattern.TOUCHDOWN_28L;
-        } else if (Pattern.R28R_ONE_MILE_FINAL.equals(last) || Pattern.R28R_TWO_MILE_FINAL.equals(last) || Pattern.R28R_FIVE_MILE_FINAL.equals(last)){
+        } else if (Pattern.R28R_ONE_MILE_FINAL.equals(last) || Pattern.R28R_TWO_MILE_FINAL.equals(last) || Pattern.R28R_FIVE_MILE_FINAL.equals(last)) {
             next = Pattern.TOUCHDOWN_28R;
         } else if (Pattern.ILS.equals(last)) {
             next = Pattern.TOUCHDOWN_28R;
@@ -443,9 +448,9 @@ public class Airplane extends Sprite {
                 next = Pattern.R10L_FIVE_MILE_FINAL;
             else
                 next = Pattern.R28R_CROSSWIND_START;
-        } else if (Pattern.R28R_CROSSWIND_START.equals(last)){
+        } else if (Pattern.R28R_CROSSWIND_START.equals(last)) {
             next = Pattern.MIDFIELD_DOWNWIND;
-        } else if (Pattern.R10L_FIVE_MILE_FINAL.equals(last)){
+        } else if (Pattern.R10L_FIVE_MILE_FINAL.equals(last)) {
             next = Pattern.R10L_FIVE_MILE_FINAL;
             makeRight360();
         }
@@ -524,7 +529,7 @@ public class Airplane extends Sprite {
                             Pattern.R28L_TWO_MILE_FINAL,
                             Pattern.CROSSWIND_START,
                             extendUpwindCache,
-                            false))){
+                            false))) {
                         Pattern Crosswind_Ext_Upwind = calculateNextVector(
                                 Pattern.R28L_ONE_MILE_FINAL,
                                 Pattern.R28L_TWO_MILE_FINAL,
@@ -830,7 +835,6 @@ public class Airplane extends Sprite {
                     }
 
 
-
                     // If we previously extended the downwind, locate & extend that vector
                     else if (alternatePattern.contains(calculateNextVector(
                             Pattern.R28L_TWO_MILE_FINAL,
@@ -1098,6 +1102,7 @@ public class Airplane extends Sprite {
 
     /**
      * Draws the data tag of the aircraft to the batch
+     *
      * @param batch Spritebatch to draw to
      */
     private void drawDataTag(SpriteBatch batch) {
@@ -1175,9 +1180,9 @@ public class Airplane extends Sprite {
     /**
      * Gets the next Intersection in order to line up on the runway that the aircraft is currently holding short of
      */
-    public void lineUp(){
+    public void lineUp() {
         taxiing = true;
-        if (rwy == Runway.R28R){
+        if (rwy == Runway.R28R) {
             if (last.equals(Intersection.R28R_HS_NORTH_A))
                 next = Intersection.R28R_A;
             else if (last.equals(Intersection.R28R_HS_NORTH_C))
@@ -1201,23 +1206,22 @@ public class Airplane extends Sprite {
 
     /**
      * Gets the next Intersection in order to cross the runway in front of the aircraft
+     *
      * @return Returns Intersection across the runway
      */
-    public void cross(){
+    public void cross() {
         taxiing = true;
         if (last.equals(Intersection.R28R_HS_NORTH_A)) {
             next = Intersection.R28L_HS_NORTH_A;
             rwy = Runway.R28L;
             clearDeparturePath();
             generateDeparturePath();
-        }
-        else if (last.equals(Intersection.R28R_HS_NORTH_C)){
+        } else if (last.equals(Intersection.R28R_HS_NORTH_C)) {
             next = Intersection.R28L_HS_NORTH_C;
             rwy = Runway.R28L;
             clearDeparturePath();
             generateDeparturePath();
-        }
-        else if (last.equals(Intersection.R28R_HS_SOUTH_D) || last.equals(Intersection.R28L_D))
+        } else if (last.equals(Intersection.R28R_HS_SOUTH_D) || last.equals(Intersection.R28L_D))
             next = Intersection.R28R_HS_NORTH_D;
         else if (last.equals(Intersection.R28R_HS_SOUTH_E) || last.equals(Intersection.R28L_E))
             next = Intersection.R28R_HS_NORTH_E;
@@ -1229,19 +1233,20 @@ public class Airplane extends Sprite {
             taxiing = false;
     }
 
-    public void clearForTakeoff(){
+    public void clearForTakeoff() {
         clearedForTakeoff = true;
     }
 
-    public void clearToLand(){
+    public void clearToLand() {
         this.clearedToLand = true;
     }
 
     /**
      * Instructs aircraft to use the designated runway
+     *
      * @param rwy Runway enum
      */
-    public void setRwy(Runway rwy){
+    public void setRwy(Runway rwy) {
         this.rwy = rwy;
         if (landings < 0) {
             departurePath.clear();
@@ -1252,7 +1257,7 @@ public class Airplane extends Sprite {
         }
     }
 
-    public void setDeparturePath(DeparturePoint p){
+    public void setDeparturePath(DeparturePoint p) {
 
         // If the departurePath contains the SID TURN START, we have not yet reached the departure end
         // Of the runway, so change the path
@@ -1278,46 +1283,49 @@ public class Airplane extends Sprite {
     /**
      * Instructs airplane to make a standard rate 360 degree turn to the left
      */
-    public void makeLeft360(){
+    public void makeLeft360() {
         make360('l');
     }
 
     /**
      * Instructs airplane to make a standard rate 360 degree turn to the right
      */
-    public void makeRight360(){
+    public void makeRight360() {
         make360('r');
     }
 
     /**
      * Instructs airplane to extend their downwind for a number of miles
+     *
      * @param miles
      */
-    public void extendDownwind(float miles){
+    public void extendDownwind(float miles) {
         this.extendDownwind += miles;
     }
 
     /**
      * Instructs airplane to extend their crosswind for a number of miles
+     *
      * @param miles
      */
-    public void extendCrosswind(float miles){
+    public void extendCrosswind(float miles) {
         this.extendCrosswind += miles;
     }
 
     /**
      * Instructs airplane to extend their upwind for a number of miles
+     *
      * @param miles
      */
-    public void extendUpwind(float miles){
+    public void extendUpwind(float miles) {
         this.extendUpwind += miles;
     }
 
-    public void cancelLandingClearance(){
+    public void cancelLandingClearance() {
         this.clearedToLand = false;
     }
 
-    public void goAroundIFR(){
+    public void goAroundIFR() {
         if (clearedToLand) {
             landings++;
             clearedToLand = false;
@@ -1325,15 +1333,15 @@ public class Airplane extends Sprite {
         this.alternatePattern = null;
         this.next = new Pattern("IFR Go Around",
                 this.dir.cpy()
-                .setAngle(70)
-                .scl((int)(20 * GameInfo.PIXELS_PER_MILE_RADAR))
-                .add(pos));
+                        .setAngle(70)
+                        .scl((int) (20 * GameInfo.PIXELS_PER_MILE_RADAR))
+                        .add(pos));
         this.dir = next.getVector2().cpy().sub(pos).nor();
         goingAround = true;
     }
 
     public void goAroundVFR() {
-        if (clearedToLand){
+        if (clearedToLand) {
             clearedToLand = false;
         }
         this.alternatePattern = null;
@@ -1342,18 +1350,19 @@ public class Airplane extends Sprite {
     /**
      * HELPER FUNCTION NOT TO BE ACCESSED DIRECTLY
      * Updates the aircraft's instructions to make a standard rate 360 turn in the indicated direction
+     *
      * @param direction 'l' for left, 'r' for right
      */
-    private void make360 (char direction) {
+    private void make360(char direction) {
         Array<Pattern> temp = new Array<Pattern>();
 
         // We will use the alternatePattern array to construct a 360 turn relative to airplane speed
         // If it already exists and has elements, store them in a temp array
         // If it doesn't exist, create it
-        if (alternatePattern != null && alternatePattern.size > 0){
+        if (alternatePattern != null && alternatePattern.size > 0) {
             temp = alternatePattern;
             alternatePattern.clear();
-        } else if (alternatePattern == null){
+        } else if (alternatePattern == null) {
             alternatePattern = new Array<Pattern>();
         }
 
@@ -1368,19 +1377,18 @@ public class Airplane extends Sprite {
 
         // Calculate points of 360 turn
         if (direction == 'l') {
-            Vector2 radius = dir.cpy().rotate90(1).scl((float)GameInfo.PIXELS_PER_MILE_RADAR * (float)turnRadiusInNM);
+            Vector2 radius = dir.cpy().rotate90(1).scl((float) GameInfo.PIXELS_PER_MILE_RADAR * (float) turnRadiusInNM);
             Vector2 center = pos.cpy().add(radius);
 
-            for (int i = 0; i != 12; i++){
+            for (int i = 0; i != 12; i++) {
                 Vector2 point = center.cpy().add(radius.cpy().rotate(-150 + (i * 30)));
                 alternatePattern.add(new Pattern(point));
             }
-        }
-        else{
-            Vector2 radius = dir.cpy().rotate90(-1).scl((float)GameInfo.PIXELS_PER_MILE_RADAR * (float)turnRadiusInNM);
+        } else {
+            Vector2 radius = dir.cpy().rotate90(-1).scl((float) GameInfo.PIXELS_PER_MILE_RADAR * (float) turnRadiusInNM);
             Vector2 center = pos.cpy().add(radius);
 
-            for (int i = 0; i != 12; i++){
+            for (int i = 0; i != 12; i++) {
                 Vector2 point = center.cpy().add(radius.cpy().rotate(150 + (i * -30)));
                 alternatePattern.add(new Pattern(point));
             }
@@ -1401,15 +1409,15 @@ public class Airplane extends Sprite {
      * Populates our departure path with a default departure path
      */
     public void generateDeparturePath(DeparturePoint departure) {
-         if (rwy == Runway.R28R)
+        if (rwy == Runway.R28R)
             departurePath.add(DeparturePoint.R28R_DEPARTURE_END, DeparturePoint.R28R_SID_TURN_START, departure);
-         else if (rwy == Runway.R28L)
+        else if (rwy == Runway.R28L)
             departurePath.add(DeparturePoint.R28L_DEPARTURE_END, DeparturePoint.R28L_SID_TURN_START, departure);
-         else if (rwy == Runway.R16)
+        else if (rwy == Runway.R16)
             departurePath.add(DeparturePoint.R16_DEPARTURE_END, DeparturePoint.R16_SOUTH1);
     }
 
-    public void generateDeparturePath(){
+    public void generateDeparturePath() {
         // Generate departure path for aircraft departing
         if (landings == -1) {
             // Generate SID for IFR aircraft with no assigned departure
@@ -1430,16 +1438,16 @@ public class Airplane extends Sprite {
         }
 
         // Generate departure path for aircraft departing for touch & goes
-        else if (landings < -1){
-            if (rwy == Runway.R28R){
+        else if (landings < -1) {
+            if (rwy == Runway.R28R) {
                 departurePath.add(Pattern.R28R_CROSSWIND_START);
-            } else if (rwy == Runway.R28L){
+            } else if (rwy == Runway.R28L) {
                 departurePath.add(Pattern.CROSSWIND_START);
             }
         }
     }
 
-    public void clearDeparturePath(){
+    public void clearDeparturePath() {
         this.departurePath.clear();
     }
 
@@ -1467,6 +1475,7 @@ public class Airplane extends Sprite {
 
     /**
      * Determines how many pixels to move per second to move correct screen on radar display
+     *
      * @return Returns double value for pixels to move per second
      */
     private double pxMovedPerSecond() {
@@ -1489,6 +1498,7 @@ public class Airplane extends Sprite {
 
     /**
      * Generates data tag part 1 for aircraft (Callsign, altitude, and type)
+     *
      * @return Returns Data Tag String
      */
     public String getDataTag1() {
@@ -1499,86 +1509,89 @@ public class Airplane extends Sprite {
      * Generates data tag part 2 for aircraft (Callsign, altitude, and speed)
      */
     public String getDataTag2() {
-        return callsign + "\n---   " + (int)speed;
+        return callsign + "\n---   " + (int) speed;
     }
 
-    public float getLastUpdateTime(){
+    public float getLastUpdateTime() {
         return lastUpdateTime;
     }
 
     /**
      * Determines if two aircraft are equal using callsign & type
+     *
      * @param o Airplane to compare to
      * @return Returns true if equal
      */
     @Override
-    public boolean equals(Object o){
-        Airplane p = (Airplane)o;
+    public boolean equals(Object o) {
+        Airplane p = (Airplane) o;
         return (this.callsign.equals(p.callsign) && this.type == p.type);
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return callsign + " (" + type.getId() + ")";
     }
 
     /**
      * Determines if an aircraft has departed the airspace
+     *
      * @return Return true if aircraft has departed
      */
-    public boolean isGone(){
+    public boolean isGone() {
         return outOfJurisdiction;
     }
 
     /**
      * Gets the connecting line sprite between the data tag and the target
+     *
      * @return Returns the sprite line
      */
-    public Sprite getLine(){
+    public Sprite getLine() {
         return line;
     }
 
-    public String getCallsign(){
+    public String getCallsign() {
         return callsign;
     }
 
-    public void setTextButton(TextButton button){
+    public void setTextButton(TextButton button) {
         this.textButton = button;
     }
 
-    public TextButton getTextButton(){
+    public TextButton getTextButton() {
         return this.textButton;
     }
 
-    public int getLandings(){
+    public int getLandings() {
         return this.landings;
     }
 
-    public int getSpeed(){
-        return (int)this.speed;
+    public int getSpeed() {
+        return (int) this.speed;
     }
 
-    public void setLandings(int landings){
+    public void setLandings(int landings) {
         this.landings = landings;
     }
 
-    public Pattern getNext(){
+    public Pattern getNext() {
         return next;
     }
 
-    public Pattern getLast(){
+    public Pattern getLast() {
         return last;
     }
 
-    public PlaneType getType(){
+    public PlaneType getType() {
         return this.type;
     }
 
-    public boolean isAirborne(){
+    public boolean isAirborne() {
         return speed >= (.74f * type.getSpeed());
     }
 
-    public int getTouchAndGoCount(){
+    public int getTouchAndGoCount() {
         if (landings <= 1 && landings >= -1)
             return 0;
         else if (landings > 1)
@@ -1587,20 +1600,20 @@ public class Airplane extends Sprite {
             return (landings * -1) - 1;
     }
 
-    public String inboundOrOutbound(){
+    public String inboundOrOutbound() {
         if (landings >= 0)
             return "Inbound";
         return "Outbound";
     }
 
-    public int getDistanceFromAirport(){
+    public int getDistanceFromAirport() {
         double distance = pos.dst(new Vector2(625, 625)) / GameInfo.PIXELS_PER_MILE_RADAR;
 
-        return (int)Math.round(distance);
+        return (int) Math.round(distance);
     }
 
-    public String getDirectionFromAirport(){
-        float angle = pos.cpy().sub(new Vector2(625,625)).angle();
+    public String getDirectionFromAirport() {
+        float angle = pos.cpy().sub(new Vector2(625, 625)).angle();
 
         if (angle > 337.5 || angle <= 22.5)
             return "E";
@@ -1622,7 +1635,7 @@ public class Airplane extends Sprite {
         return "Unknown Direction";
     }
 
-    public void setNextVector(Pattern p){
+    public void setNextVector(Pattern p) {
         this.next = p;
         this.dir = next.getVector2().cpy().sub(pos).nor();
     }
@@ -1633,7 +1646,7 @@ public class Airplane extends Sprite {
      *
      * @param taxiway Char (D, E, F, G) that the airplane should exit the runway at
      */
-    public void exitRunway(char taxiway){
+    public void exitRunway(char taxiway) {
         if (landingPath != null)
             landingPath.clear();
         else
@@ -1648,8 +1661,7 @@ public class Airplane extends Sprite {
                 landingPath.add(Intersection.R28R_F, Intersection.R28R_HS_NORTH_F);
             else if (taxiway == 'G')
                 landingPath.add(Intersection.R28R_G, Intersection.R28R_HS_NORTH_G);
-        }
-        else if (this.rwy == Runway.R28L){
+        } else if (this.rwy == Runway.R28L) {
             if (taxiway == 'D')
                 landingPath.add(Intersection.R28L_D, Intersection.R28R_HS_SOUTH_D);
             else if (taxiway == 'E')
@@ -1658,8 +1670,7 @@ public class Airplane extends Sprite {
                 landingPath.add(Intersection.R28L_F, Intersection.R28R_HS_SOUTH_F);
             else if (taxiway == 'G')
                 landingPath.add(Intersection.R28L_G, Intersection.R28R_HS_SOUTH_G);
-        }
-        else
+        } else
             landingPath = new Array<>(type.getDefaultLandingPath(rwy));
     }
 
@@ -1667,25 +1678,25 @@ public class Airplane extends Sprite {
         return this.fpl;
     }
 
-    public boolean contains(float x, float y){
+    public boolean contains(float x, float y) {
         Rectangle boundingRectangle = this.getBoundingRectangle();
         return x >= boundingRectangle.x && x <= boundingRectangle.x + boundingRectangle.width &&
                 y >= boundingRectangle.y && y <= boundingRectangle.y + boundingRectangle.height;
     }
 
-    public void pause(){
+    public void pause() {
         paused = true;
     }
 
-    public void resume(){
+    public void resume() {
         paused = false;
     }
 
-    public boolean isPaused(){
+    public boolean isPaused() {
         return paused;
     }
 
-    public Pattern getFinalDepartureInstruction(){
+    public Pattern getFinalDepartureInstruction() {
         if (this.finalDepartureInstruction != null)
             return this.finalDepartureInstruction;
         return null;

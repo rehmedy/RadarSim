@@ -1,5 +1,6 @@
 package com.adamjrehm.radarsim.huds;
 
+import com.adamjrehm.radarsim.config.Configuration;
 import com.adamjrehm.radarsim.scenes.Gameplay;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -19,9 +20,9 @@ public class GameplayUI {
 
     private Table rootTable;    // Two columns - Radar side & control side
     private Table controlTable; // Two rows - Airplane commands in top row
-                                // Sim commands in bottom row
+    // Sim commands in bottom row
 
-    public GameplayUI(Gameplay gameplay){
+    public GameplayUI(Gameplay gameplay) {
 
         this.camera = new OrthographicCamera();
         this.viewport = new ScreenViewport(camera);
@@ -55,18 +56,23 @@ public class GameplayUI {
         stage.addActor(rootTable);
     }
 
-    public void render(){
+    public void dispose() {
+        stage.dispose();
+        Configuration.UI.dispose();
+    }
+
+    public void render() {
         simCommandHandler.update();
         stage.getViewport().apply();
         stage.act();
         stage.draw();
     }
 
-    public void resize(int width, int height){
+    public void resize(int width, int height) {
         this.stage.getViewport().update(width, height, true);
     }
 
-    public Stage getStage(){
+    public Stage getStage() {
         return this.stage;
     }
 

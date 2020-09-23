@@ -13,9 +13,10 @@ public class CallsignManager {
 
     private static final CallsignManager callsignManager = new CallsignManager();
 
-    private CallsignManager(){ }
+    private CallsignManager() {
+    }
 
-    public static CallsignManager getInstance(){
+    public static CallsignManager getInstance() {
         return callsignManager;
     }
 
@@ -30,7 +31,7 @@ public class CallsignManager {
         return commercialPlaneCallsigns;
     }
 
-    public boolean load(){
+    public boolean load() {
         boolean a = loadGeneralAviationAirplanes();
         boolean b = loadCommercialAirplanes();
 
@@ -44,12 +45,12 @@ public class CallsignManager {
 
         String GAPlaneListPath = "./configs/generalaviationplanes.txt";
 
-        if (new File(GAPlaneListPath).exists()){
+        if (new File(GAPlaneListPath).exists()) {
 
             try {
                 Scanner scanner = new Scanner(new File(GAPlaneListPath));
 
-                while (scanner.hasNextLine()){
+                while (scanner.hasNextLine()) {
                     String[] tokens = scanner.nextLine().split(" ");
                     String callsign = tokens[0];
                     PlaneType type = PlaneType.getPlaneTypeByID(tokens[1]);
@@ -73,20 +74,20 @@ public class CallsignManager {
         }
     }
 
-    private boolean loadCommercialAirplanes(){
+    private boolean loadCommercialAirplanes() {
         System.out.println("Loading commercial airplane list...");
 
         commercialPlaneCallsigns = new Array<>();
 
         String commercialPlaneListPath = "./configs/commercialplanes.txt";
 
-        if (new File(commercialPlaneListPath).exists()){
+        if (new File(commercialPlaneListPath).exists()) {
 
             try {
                 Scanner scanner = new Scanner(new File(commercialPlaneListPath));
                 scanner.useDelimiter(" ");
 
-                while (scanner.hasNextLine()){
+                while (scanner.hasNextLine()) {
                     String[] tokens = scanner.nextLine().split(" ");
                     String callsign = tokens[0];
                     PlaneType type = PlaneType.getPlaneTypeByID(tokens[1]);
@@ -114,7 +115,7 @@ public class CallsignManager {
         private String callsign;
         private PlaneType type;
 
-        private Callsign(String callsign, PlaneType type){
+        private Callsign(String callsign, PlaneType type) {
             this.callsign = callsign;
             this.type = type;
         }

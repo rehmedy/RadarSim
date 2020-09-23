@@ -82,7 +82,7 @@ public class Gameplay implements Screen {
             d = 0;
         }
 
-        if (planeController.isPaused()){
+        if (planeController.isPaused()) {
             pauseTime += Gdx.graphics.getDeltaTime();
         }
     }
@@ -114,32 +114,33 @@ public class Gameplay implements Screen {
         radarimg.dispose();
         planeController.dispose();
         PatternDrawable.dispose();
+        ui.dispose();
     }
 
-    public PlaneController getPlaneController(){
+    public PlaneController getPlaneController() {
         return this.planeController;
     }
 
-    public RadarSim getSim(){
+    public RadarSim getSim() {
         return this.sim;
     }
 
-    public GameplayUI getUI(){
+    public GameplayUI getUI() {
         return this.ui;
     }
 
-    public Viewport getViewport(){
+    public Viewport getViewport() {
         return this.viewport;
     }
 
-    public String getTotalTimeElapsed(){
+    public String getTotalTimeElapsed() {
         long time = (System.currentTimeMillis() - START_TIME_MILLIS) / 1000;
         return time / 60 + ":" + ((time % 60) < 10 ? "0" + time % 60 : time % 60);
     }
 
-    public String getRunningTime(){
+    public String getRunningTime() {
         double t = ((System.currentTimeMillis() - START_TIME_MILLIS) / 1000d) - pauseTime;
-        int time = (int)t;
+        int time = (int) t;
         return time / 60 + ":" + ((time % 60) < 10 ? "0" + time % 60 : time % 60);
     }
 }

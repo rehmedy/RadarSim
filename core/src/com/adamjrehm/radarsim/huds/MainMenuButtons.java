@@ -1,7 +1,6 @@
 package com.adamjrehm.radarsim.huds;
 
 import com.adamjrehm.radarsim.RadarSim;
-import com.adamjrehm.radarsim.config.Configuration;
 import com.adamjrehm.radarsim.helpers.GameInfo;
 import com.adamjrehm.radarsim.scenes.Gameplay;
 import com.badlogic.gdx.Gdx;
@@ -15,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainMenuButtons {
@@ -26,7 +24,11 @@ public class MainMenuButtons {
 
     private ImageButton playBtn, optionsBtn, quitBtn;
 
-    public MainMenuButtons(RadarSim sim){
+    private Texture playBtnTexture = new Texture("images/StartBtn.png");
+    private Texture optionsBtnTexture = new Texture("images/OptionsBtn.png");
+    private Texture quitBtnTexture = new Texture("images/QuitBtn.png");
+
+    public MainMenuButtons(RadarSim sim) {
         this.radarSim = sim;
 
         gameViewport = new FitViewport(GameInfo.VIRTUAL_WIDTH, GameInfo.VIRTUAL_HEIGHT, new OrthographicCamera());
@@ -43,10 +45,7 @@ public class MainMenuButtons {
         stage.addActor(quitBtn);
     }
 
-    private void createAndPositionButtons(){
-        Texture playBtnTexture = new Texture("images/StartBtn.png");
-        Texture optionsBtnTexture = new Texture("images/OptionsBtn.png");
-        Texture quitBtnTexture = new Texture("images/QuitBtn.png");
+    private void createAndPositionButtons() {
 
         playBtnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         optionsBtnTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
@@ -68,7 +67,7 @@ public class MainMenuButtons {
         quitBtn.setPosition(GameInfo.VIRTUAL_WIDTH / 2f, GameInfo.VIRTUAL_HEIGHT / 2f - 240, Align.center);
     }
 
-    private void addAllListeners(){
+    private void addAllListeners() {
         playBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -95,7 +94,14 @@ public class MainMenuButtons {
         });
     }
 
-    public Stage getStage(){
+    public void dispose() {
+        stage.dispose();
+        playBtnTexture.dispose();
+        optionsBtnTexture.dispose();
+        quitBtnTexture.dispose();
+    }
+
+    public Stage getStage() {
         return this.stage;
     }
 }

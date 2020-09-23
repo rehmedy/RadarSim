@@ -11,7 +11,7 @@ public class Pattern {
     public static final Pattern SEVEN_EAST = new Pattern("Seven East", 1115, 519);
     public static final Pattern EIGHT_EAST = new Pattern("Eight East", 1125, 640);
     public static final Pattern SEVEN_WEST = new Pattern("Seven West", 175, 730);
-    public static final Pattern R28R_CROSSWIND_START = new Pattern("R28R Crosswind Start", 598,668);
+    public static final Pattern R28R_CROSSWIND_START = new Pattern("R28R Crosswind Start", 598, 668);
     public static final Pattern CROSSWIND_START = new Pattern("R28L Crosswind Start", 597, 657);
     public static final Pattern MIDFIELD_DOWNWIND = new Pattern("Midfield Downwind", 590, 606);
     public static final Pattern BASE_START = new Pattern("Base Start", 718, 583);
@@ -25,7 +25,7 @@ public class Pattern {
     public static final Pattern TOUCHDOWN_28L = new Pattern("R28L Touchdown Point", 659, 646);
     public static final Pattern TOUCHDOWN_28R = new Pattern("R28R Touchdown Point", 661, 657);
     public static final Pattern SOUTH_2MI = new Pattern("Two Miles South", 612, 489);
-    public static final Pattern R10L_FIVE_MILE_FINAL = new Pattern("R10L Five Mile Final", 292,722);
+    public static final Pattern R10L_FIVE_MILE_FINAL = new Pattern("R10L Five Mile Final", 292, 722);
 
     public static Pattern[] values() {
         Array<Pattern> values = new Array<Pattern>(new Pattern[]{
@@ -40,21 +40,21 @@ public class Pattern {
     private String name;
     private Vector2 vector;
 
-    public Pattern(String name, float x, float y){
+    public Pattern(String name, float x, float y) {
         this.name = name;
         this.vector = new Vector2(x, y);
     }
-    
-    public Pattern(Vector2 v){
+
+    public Pattern(Vector2 v) {
         this.vector = v;
     }
 
-    public Pattern(String name, Vector2 v){
+    public Pattern(String name, Vector2 v) {
         this.name = name;
         this.vector = v;
     }
 
-    public Vector2 getVector2(){
+    public Vector2 getVector2() {
         return vector;
     }
 
@@ -71,13 +71,13 @@ public class Pattern {
     }
 
     @Override
-    public boolean equals(Object o){
-        Pattern p = (Pattern)o;
+    public boolean equals(Object o) {
+        Pattern p = (Pattern) o;
         return p.getVector2().epsilonEquals(getVector2());
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Pattern " + name + ": " + getX() + "/" + getY();
     }
 

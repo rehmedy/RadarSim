@@ -1,7 +1,6 @@
 package com.adamjrehm.radarsim.scenes;
 
 import com.adamjrehm.radarsim.RadarSim;
-import com.adamjrehm.radarsim.config.Configuration;
 import com.adamjrehm.radarsim.helpers.GameInfo;
 import com.adamjrehm.radarsim.huds.MainMenuButtons;
 import com.badlogic.gdx.Gdx;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainMenu implements Screen {
@@ -24,7 +22,7 @@ public class MainMenu implements Screen {
 
     private MainMenuButtons btns;
 
-    public MainMenu(RadarSim sim){
+    public MainMenu(RadarSim sim) {
 
         this.radarSim = sim;
 
@@ -82,6 +80,6 @@ public class MainMenu implements Screen {
     @Override
     public void dispose() {
         bg.dispose();
-        btns.getStage().dispose();
+        btns.dispose();
     }
 }

@@ -5,8 +5,6 @@ import com.adamjrehm.radarsim.planes.Airplane;
 import com.adamjrehm.radarsim.planes.PlaneController;
 import com.adamjrehm.radarsim.scenes.Gameplay;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -18,23 +16,14 @@ public class StripHandler extends Table {
 
     private PlaneController controller;
 
-    private Texture stripTexture, arrivalContainerTexture, departureContainerTexture;
-
     private Container<VerticalGroup> arrivalTableContainer, departureTableContainer;
     private VerticalGroup arrivalTable, departureTable;
 
 
-    public StripHandler(Gameplay gameplay){
+    public StripHandler(Gameplay gameplay) {
         this.controller = gameplay.getPlaneController();
 
 //        setDebug(true);
-
-        stripTexture = new Texture("images/stripbackground.png");
-        stripTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        arrivalContainerTexture = new Texture("images/arrivalscontainerbackground.png");
-        arrivalContainerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        departureContainerTexture = new Texture("images/departurescontainerbackground.png");
-        departureContainerTexture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
 
         this.arrivalTable = new VerticalGroup();
         updateArrivals();
@@ -54,7 +43,7 @@ public class StripHandler extends Table {
         this.departureTableContainer = new Container<>();
         departureTableContainer.bottom();
         departureTableContainer.setActor(departureTable);
-        departureTableContainer.setBackground(new SpriteDrawable(new Sprite(departureContainerTexture)));
+        departureTableContainer.setBackground(new SpriteDrawable(Configuration.UI.getDepartureContainerSprite()));
         departureTableContainer.getBackground().setMinWidth(currentWidth * Configuration.UI.getScale());
         departureTableContainer.getBackground().setMinHeight(currentHeight * Configuration.UI.getScale());
 
@@ -65,30 +54,26 @@ public class StripHandler extends Table {
 
     }
 
-    public void dispose(){
-        stripTexture.dispose();
-    }
-
-    public void update(){
+    public void update() {
         updateArrivals();
         updateDepartures();
     }
 
-    public void updateArrivals(){
+    public void updateArrivals() {
         arrivalTable.clear();
-        for (Airplane p : controller.getArrivalList()){
+        for (Airplane p : controller.getArrivalList()) {
             arrivalTable.addActor(generateStrip(p));
         }
     }
 
-    public void updateDepartures(){
+    public void updateDepartures() {
         departureTable.clear();
-        for (Airplane p : controller.getDepartureList()){
+        for (Airplane p : controller.getDepartureList()) {
             departureTable.addActor(generateStrip(p));
         }
     }
 
-    public Label generateStrip(Airplane p){
+    public Label generateStrip(Airplane p) {
 
         Label.LabelStyle style = new Label.LabelStyle();
 

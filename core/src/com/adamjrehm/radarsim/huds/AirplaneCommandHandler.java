@@ -28,7 +28,7 @@ public class AirplaneCommandHandler extends Table {
     private Container<VerticalGroup> planeInfoTableContainer;
     private VerticalGroup planeInfoTable;
     private Label nextVectorLabel, lastVectorLabel, speedLabel, isAirborneLabel, inboundOrOutboundLabel, touchAndGoCountLabel,
-                    locationLabel;
+            locationLabel;
 
     private ButtonGroup<TextButton> airplaneButtonGroup, setValueButtonGroup;
 
@@ -39,7 +39,7 @@ public class AirplaneCommandHandler extends Table {
 
     private Airplane selected;
 
-    public AirplaneCommandHandler(Gameplay gameplay){
+    public AirplaneCommandHandler(Gameplay gameplay) {
 
         // Initialization
         this.controller = gameplay.getPlaneController();
@@ -99,7 +99,7 @@ public class AirplaneCommandHandler extends Table {
         //setDebug(true);
     }
 
-    public void update(Array<Airplane> planes){
+    public void update(Array<Airplane> planes) {
         // If an aircraft is checked, find it & show commands
         if (airplaneButtonGroup.getAllChecked().size == 1) {
             updatePauseButton();
@@ -113,7 +113,7 @@ public class AirplaneCommandHandler extends Table {
         }
 
         // If all aircraft are unchecked, hide the commandTable, clear selection
-        else if (airplaneButtonGroup.getAllChecked().size == 0){
+        else if (airplaneButtonGroup.getAllChecked().size == 0) {
             column2Container.setVisible(false);
             column3Container.setVisible(false);
             planeInfoTableContainer.setVisible(false);
@@ -121,11 +121,11 @@ public class AirplaneCommandHandler extends Table {
         }
     }
 
-    private void updatePauseButton(){
-        if (selected.isPaused() && commandTable.getChildren().contains(pausePlaneButton, true)){
+    private void updatePauseButton() {
+        if (selected.isPaused() && commandTable.getChildren().contains(pausePlaneButton, true)) {
             commandTable.removeActor(pausePlaneButton);
             commandTable.addActorBefore(removePlaneButton, resumePlaneButton);
-        } else if (!selected.isPaused() && commandTable.getChildren().contains(resumePlaneButton, true)){
+        } else if (!selected.isPaused() && commandTable.getChildren().contains(resumePlaneButton, true)) {
             commandTable.removeActor(resumePlaneButton);
             commandTable.addActorBefore(removePlaneButton, pausePlaneButton);
         }
@@ -234,19 +234,17 @@ public class AirplaneCommandHandler extends Table {
                     selected.clearDeparturePath();
                     selected.generateDeparturePath();
                     System.out.println(selected.toString() + ": Touch & Go added");
-                }
-                else if (selected.getLandings() > 0) {
+                } else if (selected.getLandings() > 0) {
                     selected.setLandings(selected.getLandings() + 1);
                     System.out.println(selected.toString() + ": Touch & Go added");
-                }
-                else
+                } else
                     System.out.println(selected.toString() + ": Unable to add touch & go");
             }
         });
         t.addActor(addTouchAndGoButton);
 
         TextButton cancelLandingClearanceButton = new TextButton("Cancel Landing Clearance", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        cancelLandingClearanceButton.addListener(new ChangeListener(){
+        cancelLandingClearanceButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.cancelLandingClearance();
@@ -255,7 +253,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(cancelLandingClearanceButton);
 
         TextButton clearForTakeoffButton = new TextButton("Clear for Takeoff", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        clearForTakeoffButton.addListener(new ChangeListener(){
+        clearForTakeoffButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.clearForTakeoff();
@@ -265,7 +263,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(clearForTakeoffButton);
 
         TextButton clearToLandButton = new TextButton("Clear to Land", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        clearToLandButton.addListener(new ChangeListener(){
+        clearToLandButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.clearToLand();
@@ -275,7 +273,7 @@ public class AirplaneCommandHandler extends Table {
 
         // Create buttons & add listeners
         TextButton crossButton = new TextButton("Cross", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        crossButton.addListener(new ChangeListener(){
+        crossButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 System.out.println(selected.toString() + ": Crossing runway...");
@@ -285,10 +283,10 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(crossButton);
 
         TextButton exitRunwayButton = new TextButton("Exit Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
-        exitRunwayButton.addListener(new ChangeListener(){
+        exitRunwayButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                TextButton button = (TextButton)actor;
+                TextButton button = (TextButton) actor;
                 if (button.isChecked()) {
                     column3Container.setActor(taxiwayTable);
                     column3Container.setVisible(true);
@@ -302,7 +300,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(exitRunwayButton);
 
         TextButton extendCrosswindButton = new TextButton("Extend Crosswind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        extendCrosswindButton.addListener(new ChangeListener(){
+        extendCrosswindButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendCrosswind(10);
@@ -311,7 +309,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(extendCrosswindButton);
 
         TextButton extendCrosswindOneMileButton = new TextButton("Extend Crosswind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        extendCrosswindOneMileButton.addListener(new ChangeListener(){
+        extendCrosswindOneMileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendCrosswind(1);
@@ -320,7 +318,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(extendCrosswindOneMileButton);
 
         TextButton extendDownwindButton = new TextButton("Extend Downwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        extendDownwindButton.addListener(new ChangeListener(){
+        extendDownwindButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendDownwind(10);
@@ -329,7 +327,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(extendDownwindButton);
 
         TextButton extendDownwindOneMileButton = new TextButton("Extend Downwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        extendDownwindOneMileButton.addListener(new ChangeListener(){
+        extendDownwindOneMileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendDownwind(1);
@@ -338,7 +336,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(extendDownwindOneMileButton);
 
         TextButton extendUpwindButton = new TextButton("Extend Upwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        extendUpwindButton.addListener(new ChangeListener(){
+        extendUpwindButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendUpwind(10);
@@ -347,7 +345,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(extendUpwindButton);
 
         TextButton extendUpwindOneMileButton = new TextButton("Extend Upwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        extendUpwindOneMileButton.addListener(new ChangeListener(){
+        extendUpwindOneMileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendUpwind(1);
@@ -356,7 +354,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(extendUpwindOneMileButton);
 
         TextButton goAroundButton = new TextButton("Go Around", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        goAroundButton.addListener(new ChangeListener(){
+        goAroundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 if (selected.getFPLType() == FPLType.IFR)
@@ -368,7 +366,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(goAroundButton);
 
         TextButton lineUpButton = new TextButton("Line Up & Wait", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        lineUpButton.addListener(new ChangeListener(){
+        lineUpButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.lineUp();
@@ -379,7 +377,7 @@ public class AirplaneCommandHandler extends Table {
 
 
         TextButton makeLeft360Button = new TextButton("Make Left 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        makeLeft360Button.addListener(new ChangeListener(){
+        makeLeft360Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.makeLeft360();
@@ -388,7 +386,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(makeLeft360Button);
 
         TextButton makeRight360Button = new TextButton("Make Right 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        makeRight360Button.addListener(new ChangeListener(){
+        makeRight360Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.makeRight360();
@@ -397,15 +395,14 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(makeRight360Button);
 
         TextButton setDeparturePathButton = new TextButton("Set Departure Path", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
-        setDeparturePathButton.addListener(new ChangeListener(){
+        setDeparturePathButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                TextButton button = (TextButton)actor;
+                TextButton button = (TextButton) actor;
                 if (button.isChecked()) {
                     column3Container.setActor(departurePathTable);
                     column3Container.setVisible(true);
-                }
-                else{
+                } else {
                     column3Container.removeActor(departurePathTable);
                     column3Container.setVisible(false);
                 }
@@ -418,12 +415,11 @@ public class AirplaneCommandHandler extends Table {
         setNextVectorButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                TextButton button = (TextButton)actor;
+                TextButton button = (TextButton) actor;
                 if (button.isChecked()) {
                     column3Container.setActor(vectorTable);
                     column3Container.setVisible(true);
-                }
-                else{
+                } else {
                     column3Container.removeActor(vectorTable);
                     column3Container.setVisible(false);
                 }
@@ -436,7 +432,7 @@ public class AirplaneCommandHandler extends Table {
         setRunwayButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
-                TextButton button = (TextButton)actor;
+                TextButton button = (TextButton) actor;
                 if (button.isChecked()) {
                     column3Container.setActor(runwayTable);
                     column3Container.setVisible(true);
@@ -450,7 +446,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(setRunwayButton);
 
         TextButton turnBaseButton = new TextButton("Turn Base", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        turnBaseButton.addListener(new ChangeListener(){
+        turnBaseButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.turnBase();
@@ -482,7 +478,7 @@ public class AirplaneCommandHandler extends Table {
                 System.out.println(selected.getCallsign() + ": Resumed.");
             }
         });
-        removePlaneButton.addListener(new ChangeListener(){
+        removePlaneButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 controller.removePlane(selected);
@@ -495,10 +491,10 @@ public class AirplaneCommandHandler extends Table {
         return t;
     }
 
-    private VerticalGroup populateVectors(){
+    private VerticalGroup populateVectors() {
         VerticalGroup t = new VerticalGroup();
 
-        for (final Pattern p: Pattern.values()){
+        for (final Pattern p : Pattern.values()) {
             TextButton vectorButton = new TextButton(p.getName(), Configuration.UI.getButtonStyle(false, true, Color.WHITE));
             vectorButton.addListener(new ChangeListener() {
                 @Override
@@ -512,11 +508,11 @@ public class AirplaneCommandHandler extends Table {
         return t;
     }
 
-    private VerticalGroup populateRunways(){
+    private VerticalGroup populateRunways() {
         VerticalGroup t = new VerticalGroup();
 
         TextButton R28LButton = new TextButton("Runway 28L", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        R28LButton.addListener(new ChangeListener(){
+        R28LButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.setRwy(Runway.R28L);
@@ -525,7 +521,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(R28LButton);
 
         TextButton R28RButton = new TextButton("Runway 28R", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        R28RButton.addListener(new ChangeListener(){
+        R28RButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.setRwy(Runway.R28R);
@@ -536,10 +532,10 @@ public class AirplaneCommandHandler extends Table {
         return t;
     }
 
-    private VerticalGroup populateDeparturePaths(){
+    private VerticalGroup populateDeparturePaths() {
         VerticalGroup t = new VerticalGroup();
 
-        for (final DeparturePoint p : DeparturePoint.values()){
+        for (final DeparturePoint p : DeparturePoint.values()) {
             TextButton departurePointButton = new TextButton(p.getName(), Configuration.UI.getButtonStyle(false, false, Color.WHITE));
             departurePointButton.addListener(new ChangeListener() {
                 @Override
@@ -553,11 +549,11 @@ public class AirplaneCommandHandler extends Table {
         return t;
     }
 
-    private VerticalGroup populateTaxiways(){
+    private VerticalGroup populateTaxiways() {
         VerticalGroup t = new VerticalGroup();
 
         TextButton taxiwayDeltaButton = new TextButton("Taxiway D", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        taxiwayDeltaButton.addListener(new ChangeListener(){
+        taxiwayDeltaButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.exitRunway('D');
@@ -566,7 +562,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(taxiwayDeltaButton);
 
         TextButton taxiwayEchoButton = new TextButton("Taxiway E", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        taxiwayEchoButton.addListener(new ChangeListener(){
+        taxiwayEchoButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.exitRunway('E');
@@ -575,7 +571,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(taxiwayEchoButton);
 
         TextButton taxiwayFoxtrotButton = new TextButton("Taxiway F", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        taxiwayFoxtrotButton.addListener(new ChangeListener(){
+        taxiwayFoxtrotButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.exitRunway('F');
@@ -584,7 +580,7 @@ public class AirplaneCommandHandler extends Table {
         t.addActor(taxiwayFoxtrotButton);
 
         TextButton taxiwayGolfButton = new TextButton("Taxiway G", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
-        taxiwayGolfButton.addListener(new ChangeListener(){
+        taxiwayGolfButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.exitRunway('G');
@@ -595,7 +591,7 @@ public class AirplaneCommandHandler extends Table {
         return t;
     }
 
-    private VerticalGroup populatePlaneInfo(){
+    private VerticalGroup populatePlaneInfo() {
         VerticalGroup t = new VerticalGroup();
 
         Label.LabelStyle style = new Label.LabelStyle();
@@ -627,7 +623,7 @@ public class AirplaneCommandHandler extends Table {
         return t;
     }
 
-    public void addAirplane(final Airplane p){
+    public void addAirplane(final Airplane p) {
         TextButton button = new TextButton(p.toString(), Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         button.addListener(new ChangeListener() {
             @Override
@@ -643,22 +639,22 @@ public class AirplaneCommandHandler extends Table {
         airplaneTable.addActor(button);
     }
 
-    public void removeAirplane(Airplane p){
+    public void removeAirplane(Airplane p) {
         airplaneButtonGroup.remove(p.getTextButton());
         airplaneTable.removeActor(p.getTextButton());
     }
 
-    public void select(Airplane p){
+    public void select(Airplane p) {
         this.selected = p;
         this.airplaneButtonGroup.setChecked(p.toString());
     }
 
-    public void deselectAll(){
+    public void deselectAll() {
         this.selected = null;
         this.airplaneButtonGroup.uncheckAll();
     }
 
-    public void clearSelection(){
+    public void clearSelection() {
         this.selected = null;
     }
 }

@@ -48,16 +48,16 @@ public enum PlaneType {
         return id;
     }
 
-    public WeightCategory getWeightCategory(){
+    public WeightCategory getWeightCategory() {
         return cat;
     }
 
-    public Intersection[] getDefaultLandingPath(Runway rwy){
+    public Intersection[] getDefaultLandingPath(Runway rwy) {
         return cat.getDefaultLandingPath(rwy);
     }
 
-    public static PlaneType getPlaneTypeByID(String id){
-        for (PlaneType p : PlaneType.values()){
+    public static PlaneType getPlaneTypeByID(String id) {
+        for (PlaneType p : PlaneType.values()) {
             if (p.id.contains(id))
                 return p;
         }

@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 public class Configuration {
@@ -39,13 +41,14 @@ public class Configuration {
             planeDecelerationRate;
 
 
-    private Configuration(){}
+    private Configuration() {
+    }
 
-    public static Configuration getInstance(){
+    public static Configuration getInstance() {
         return INSTANCE;
     }
 
-    public boolean init(){
+    public boolean init() {
         boolean a = loadAirportConfiguration();
         boolean b = UI.initAssets();
 
@@ -59,7 +62,7 @@ public class Configuration {
 
         Properties prop = new Properties();
 
-        if (new File(configFilePath).exists()){
+        if (new File(configFilePath).exists()) {
             try {
                 FileInputStream inputStream = new FileInputStream(new File(configFilePath));
                 prop.load(inputStream);
@@ -198,7 +201,7 @@ public class Configuration {
         return planeDecelerationRate;
     }
 
-    public static class UI{
+    public static class UI {
         private static BitmapFont font;
         private static Sprite buttonUp;
         private static Sprite buttonDown;
@@ -209,7 +212,7 @@ public class Configuration {
         private static Sprite arrivalContainer;
         private static Sprite departureContainer;
 
-        private static boolean initAssets(){
+        private static boolean initAssets() {
             initFont();
 
             Texture buttonUpTexture = new Texture("images/buttonup.png"),
@@ -243,7 +246,7 @@ public class Configuration {
             return true;
         }
 
-        private static void initFont(){
+        private static void initFont() {
             FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/arial.ttf"));
             FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
             parameter.size = (9 + (getUiScale() * 2));
@@ -254,16 +257,28 @@ public class Configuration {
             generator.dispose();
         }
 
-        public static TextButton.TextButtonStyle getButtonStyle(boolean toggleable, boolean slim, Color color){
+        public static void dispose() {
+            font.dispose();
+            buttonChecked.getTexture().dispose();
+            buttonDown.getTexture().dispose();
+            buttonDownSlim.getTexture().dispose();
+            buttonUp.getTexture().dispose();
+            buttonUpSlim.getTexture().dispose();
+            strip.getTexture().dispose();
+            arrivalContainer.getTexture().dispose();
+            departureContainer.getTexture().dispose();
+        }
+
+        public static TextButton.TextButtonStyle getButtonStyle(boolean toggleable, boolean slim, Color color) {
             TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
 
-            if (slim){
+            if (slim) {
                 buttonStyle.up = new SpriteDrawable(buttonUpSlim);
                 buttonStyle.down = new SpriteDrawable(buttonDownSlim);
 
             } else {
                 buttonStyle.up = new SpriteDrawable(buttonUp);
-                buttonStyle.down =  new SpriteDrawable(buttonDown);
+                buttonStyle.down = new SpriteDrawable(buttonDown);
                 if (toggleable)
                     buttonStyle.checked = new SpriteDrawable(buttonChecked);
 
@@ -275,7 +290,7 @@ public class Configuration {
             return buttonStyle;
         }
 
-        private static void scaleButtonStyle(TextButton.TextButtonStyle buttonStyle){
+        private static void scaleButtonStyle(TextButton.TextButtonStyle buttonStyle) {
             float currentWidth = buttonStyle.up.getMinWidth();
             float currentHeight = buttonStyle.up.getMinHeight();
             buttonStyle.up.setMinWidth(currentWidth * Configuration.UI.getScale());
@@ -283,13 +298,13 @@ public class Configuration {
             buttonStyle.down.setMinWidth(currentWidth * Configuration.UI.getScale());
             buttonStyle.down.setMinHeight(currentHeight * Configuration.UI.getScale());
 
-            if (buttonStyle.checked != null){
+            if (buttonStyle.checked != null) {
                 buttonStyle.checked.setMinWidth(currentWidth * Configuration.UI.getScale());
                 buttonStyle.checked.setMinHeight(currentHeight * Configuration.UI.getScale());
             }
         }
 
-        public static float getScale(){
+        public static float getScale() {
             return ((9 + (getUiScale() * 2)) / 16f);
         }
 
