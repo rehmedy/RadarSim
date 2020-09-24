@@ -107,6 +107,7 @@ public class AirplaneCommandHandler extends Table {
         // If an aircraft is checked, find it & show commands
         if (airplaneButtonGroup.getAllChecked().size == 1) {
             updatePlaneInfoLabels();
+            showButtons();
         }
 
         // If all aircraft are unchecked, hide the commandTable, clear selection
@@ -117,16 +118,6 @@ public class AirplaneCommandHandler extends Table {
             commandTable.clear();
             clearSelection();
         }
-    }
-
-    private void updatePauseButton() {
-//        if (selected.isPaused() && commandTable.getChildren().contains(pausePlaneButton, true)) {
-//            commandTable.removeActor(pausePlaneButton);
-//            commandTable.addActorBefore(removePlaneButton, resumePlaneButton);
-//        } else if (!selected.isPaused() && commandTable.getChildren().contains(resumePlaneButton, true)) {
-//            commandTable.removeActor(resumePlaneButton);
-//            commandTable.addActorBefore(removePlaneButton, pausePlaneButton);
-//        }
     }
 
     private void updatePlaneInfoLabels(){
@@ -143,7 +134,7 @@ public class AirplaneCommandHandler extends Table {
         commandTable.clear();
 
         if (selected.getFPLType() == FPLType.IFR){
-            if (selected.getLandings() < 0) {
+            if (selected.getLandings() < 0 && !selected.isAirborne()) {
                 commandTable.addActor(clearForTakeoffButton);
                 commandTable.addActor(crossButton);
                 commandTable.addActor(lineUpButton);
@@ -156,7 +147,7 @@ public class AirplaneCommandHandler extends Table {
                 commandTable.addActor(goAroundButton);
             }
         } else if (selected.getFPLType() == FPLType.VFR){
-            if (selected.getLandings() < 0) {
+            if (selected.getLandings() < 0 && !selected.isAirborne()) {
                 commandTable.addActor(addTouchAndGoButton);
                 commandTable.addActor(clearForTakeoffButton);
                 commandTable.addActor(crossButton);
@@ -164,7 +155,6 @@ public class AirplaneCommandHandler extends Table {
             } else if (selected.getLandings() == 0) {
                 commandTable.addActor(crossButton);
                 commandTable.addActor(exitRunwayButton);
-
             } else if (selected.getLandings() > 0) {
                 commandTable.addActor(addTouchAndGoButton);
                 commandTable.addActor(cancelLandingClearanceButton);
@@ -696,7 +686,6 @@ public class AirplaneCommandHandler extends Table {
                 setValueButtonGroup.uncheckAll();
 
                 showButtons();
-                updatePauseButton();
             }
         });
         p.setTextButton(button);

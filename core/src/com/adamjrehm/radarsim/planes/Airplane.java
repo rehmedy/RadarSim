@@ -51,7 +51,7 @@ public class Airplane extends Sprite {
         getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         this.callsign = callsign;
         this.type = type;
-        this.speed = (float) type.getSpeed();
+        this.speed = (float) type.getArrivalSpeed();
         this.last = startPoint;
         this.landings = landings;
         line = new Sprite(new Texture("images/greenbox.png"));
@@ -190,12 +190,12 @@ public class Airplane extends Sprite {
                 }
 
                 // Reduce speed if cleared to land
-                if (clearedToLand && speed > (.75f * type.getSpeed())) {
+                if (clearedToLand && speed > (.75f * type.getArrivalSpeed())) {
                     speed += Configuration.getPlaneDecelerationRate() * Gdx.graphics.getDeltaTime();
                 }
 
                 // If we're not cleared to land and under max speed, speed up
-                else if (!clearedToLand && speed < type.getSpeed())
+                else if (!clearedToLand && speed < type.getArrivalSpeed())
                     speed += Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime();
 
                 // Scale direction vector to our speed * time
@@ -206,11 +206,6 @@ public class Airplane extends Sprite {
 
                 // Update the sprite position on the batch one time per X second(s) to mimic a radar scope
                 if (lastUpdateTime >= Configuration.getRadarUpdateSpeed()) {
-//                System.out.println("Position: " + this.pos.x + " / " + this.pos.y);
-//                System.out.println("Bounding Rectangle: " + this.getBoundingRectangle().x + " / " + this.getBoundingRectangle().y);
-//                System.out.println("Center: " + (this.getBoundingRectangle().x + (this.getBoundingRectangle().width / 2)) + " / " + (this.getBoundingRectangle().y + (this.getBoundingRectangle().height / 2)));
-//                System.out.println("Rectangle Width/Height: " + this.getBoundingRectangle().width + " / " + this.getBoundingRectangle().height);
-//                System.out.println("Sprite Width/Height: " + this.getWidth() + " / " + this.getHeight());
                     setPosition(pos.x - getWidth() / 2, pos.y - getHeight() / 2);
                     lastUpdateTime = 0;
                 }
@@ -305,7 +300,7 @@ public class Airplane extends Sprite {
                 else if (clearedForTakeoff) {
 
                     // Accelerate to max speed
-                    if (speed < type.getSpeed())
+                    if (speed < type.getArrivalSpeed())
                         speed += Configuration.getPlaneAccelerationRate() * Gdx.graphics.getDeltaTime();
 
                     // If we have nothing more in our departure path, and no next variable
@@ -1109,7 +1104,7 @@ public class Airplane extends Sprite {
         // If the aircraft is airborne, draws data tag below aircraft
         // We'll assume the aircraft gets airborne at 75% of its max speed
         font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        if (speed >= (.74f * type.getSpeed())) {
+        if (speed >= (.74f * type.getArrivalSpeed())) {
 
             if (fpl == FPLType.IFR) {
 
@@ -1588,7 +1583,7 @@ public class Airplane extends Sprite {
     }
 
     public boolean isAirborne() {
-        return speed >= (.74f * type.getSpeed());
+        return speed >= (.74f * type.getArrivalSpeed());
     }
 
     public int getTouchAndGoCount() {
