@@ -35,7 +35,11 @@ public class AirplaneCommandHandler extends Table {
     private final TextButton pausePlaneButton = new TextButton("Pause Plane", Configuration.UI.getButtonStyle(false, false, Color.YELLOW));
     private final TextButton resumePlaneButton = new TextButton("Resume Plane", Configuration.UI.getButtonStyle(false, false, Color.GREEN));
     private final TextButton removePlaneButton = new TextButton("Remove Plane", Configuration.UI.getButtonStyle(false, false, Color.FIREBRICK));
-
+    private TextButton addTouchAndGoButton, cancelLandingClearanceButton, clearForTakeoffButton, clearToLandButton,
+            crossButton, exitRunwayButton, extendCrosswindButton, extendCrosswindOneMileButton, extendDownwindButton,
+            extendDownwindOneMileButton, extendUpwindButton, extendUpwindOneMileButton, goAroundButton, lineUpButton,
+            makeLeft360Button, makeRight360Button, setDeparturePathButton, setNextVectorButton, setRunwayButton,
+            turnBaseButton;
 
     private Airplane selected;
 
@@ -102,14 +106,7 @@ public class AirplaneCommandHandler extends Table {
     public void update(Array<Airplane> planes) {
         // If an aircraft is checked, find it & show commands
         if (airplaneButtonGroup.getAllChecked().size == 1) {
-            updatePauseButton();
-            speedLabel.setText("Speed: " + selected.getSpeed());
-            nextVectorLabel.setText("Next: " + (selected.getNext() != null ? selected.getNext().getName() : "null"));
-            lastVectorLabel.setText("Last: " + selected.getLast().getName());
-            isAirborneLabel.setText("Airborne: " + selected.isAirborne());
-            inboundOrOutboundLabel.setText("Type: " + selected.inboundOrOutbound());
-            touchAndGoCountLabel.setText("T/G: " + selected.getTouchAndGoCount());
-            locationLabel.setText("Location: " + selected.getDistanceFromAirport() + " " + selected.getDirectionFromAirport());
+            updatePlaneInfoLabels();
         }
 
         // If all aircraft are unchecked, hide the commandTable, clear selection
@@ -117,18 +114,83 @@ public class AirplaneCommandHandler extends Table {
             column2Container.setVisible(false);
             column3Container.setVisible(false);
             planeInfoTableContainer.setVisible(false);
+            commandTable.clear();
             clearSelection();
         }
     }
 
     private void updatePauseButton() {
-        if (selected.isPaused() && commandTable.getChildren().contains(pausePlaneButton, true)) {
-            commandTable.removeActor(pausePlaneButton);
-            commandTable.addActorBefore(removePlaneButton, resumePlaneButton);
-        } else if (!selected.isPaused() && commandTable.getChildren().contains(resumePlaneButton, true)) {
-            commandTable.removeActor(resumePlaneButton);
-            commandTable.addActorBefore(removePlaneButton, pausePlaneButton);
+//        if (selected.isPaused() && commandTable.getChildren().contains(pausePlaneButton, true)) {
+//            commandTable.removeActor(pausePlaneButton);
+//            commandTable.addActorBefore(removePlaneButton, resumePlaneButton);
+//        } else if (!selected.isPaused() && commandTable.getChildren().contains(resumePlaneButton, true)) {
+//            commandTable.removeActor(resumePlaneButton);
+//            commandTable.addActorBefore(removePlaneButton, pausePlaneButton);
+//        }
+    }
+
+    private void updatePlaneInfoLabels(){
+        speedLabel.setText("Speed: " + selected.getSpeed());
+        nextVectorLabel.setText("Next: " + (selected.getNext() != null ? selected.getNext().getName() : "null"));
+        lastVectorLabel.setText("Last: " + selected.getLast().getName());
+        isAirborneLabel.setText("Airborne: " + selected.isAirborne());
+        inboundOrOutboundLabel.setText("Type: " + selected.inboundOrOutbound());
+        touchAndGoCountLabel.setText("T/G: " + selected.getTouchAndGoCount());
+        locationLabel.setText("Location: " + selected.getDistanceFromAirport() + " " + selected.getDirectionFromAirport());
+    }
+
+    private void showButtons(){
+        commandTable.clear();
+
+        if (selected.getFPLType() == FPLType.IFR){
+            if (selected.getLandings() < 0) {
+                commandTable.addActor(clearForTakeoffButton);
+                commandTable.addActor(crossButton);
+                commandTable.addActor(lineUpButton);
+                commandTable.addActor(setDeparturePathButton);
+            } else if (selected.getLandings() == 0) {
+                commandTable.addActor(exitRunwayButton);
+            } else if (selected.getLandings() > 0) {
+                commandTable.addActor(cancelLandingClearanceButton);;
+                commandTable.addActor(clearToLandButton);
+                commandTable.addActor(goAroundButton);
+            }
+        } else if (selected.getFPLType() == FPLType.VFR){
+            if (selected.getLandings() < 0) {
+                commandTable.addActor(addTouchAndGoButton);
+                commandTable.addActor(clearForTakeoffButton);
+                commandTable.addActor(crossButton);
+                commandTable.addActor(lineUpButton);
+            } else if (selected.getLandings() == 0) {
+                commandTable.addActor(crossButton);
+                commandTable.addActor(exitRunwayButton);
+
+            } else if (selected.getLandings() > 0) {
+                commandTable.addActor(addTouchAndGoButton);
+                commandTable.addActor(cancelLandingClearanceButton);
+                commandTable.addActor(clearToLandButton);
+                commandTable.addActor(extendCrosswindButton);
+                commandTable.addActor(extendCrosswindOneMileButton);
+                commandTable.addActor(extendDownwindButton);
+                commandTable.addActor(extendDownwindOneMileButton);
+                commandTable.addActor(extendUpwindButton);
+                commandTable.addActor(extendUpwindOneMileButton);
+                commandTable.addActor(goAroundButton);
+                commandTable.addActor(makeLeft360Button);
+                commandTable.addActor(makeRight360Button);
+                commandTable.addActor(setNextVectorButton);
+                commandTable.addActor(setRunwayButton);
+                commandTable.addActor(turnBaseButton);
+            }
         }
+
+        if (selected.isPaused()){
+            commandTable.addActor(resumePlaneButton);
+        } else if (!selected.isPaused()) {
+            commandTable.addActor(pausePlaneButton);
+        }
+
+        commandTable.addActor(removePlaneButton);
     }
 
     private VerticalGroup populateNewPlaneButtons() {
@@ -225,7 +287,7 @@ public class AirplaneCommandHandler extends Table {
         // Create table
         final VerticalGroup t = new VerticalGroup();
 
-        TextButton addTouchAndGoButton = new TextButton("Add Touch & Go", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        addTouchAndGoButton = new TextButton("Add Touch & Go", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         addTouchAndGoButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -241,18 +303,18 @@ public class AirplaneCommandHandler extends Table {
                     System.out.println(selected.toString() + ": Unable to add touch & go");
             }
         });
-        t.addActor(addTouchAndGoButton);
+//        t.addActor(addTouchAndGoButton);
 
-        TextButton cancelLandingClearanceButton = new TextButton("Cancel Landing Clearance", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        cancelLandingClearanceButton = new TextButton("Cancel Landing Clearance", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         cancelLandingClearanceButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.cancelLandingClearance();
             }
         });
-        t.addActor(cancelLandingClearanceButton);
+//        t.addActor(cancelLandingClearanceButton);
 
-        TextButton clearForTakeoffButton = new TextButton("Clear for Takeoff", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        clearForTakeoffButton = new TextButton("Clear for Takeoff", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         clearForTakeoffButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -260,19 +322,19 @@ public class AirplaneCommandHandler extends Table {
                 System.out.println(selected.toString() + ": Cleared for takeoff...");
             }
         });
-        t.addActor(clearForTakeoffButton);
+//        t.addActor(clearForTakeoffButton);
 
-        TextButton clearToLandButton = new TextButton("Clear to Land", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        clearToLandButton = new TextButton("Clear to Land", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         clearToLandButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.clearToLand();
             }
         });
-        t.addActor(clearToLandButton);
+//        t.addActor(clearToLandButton);
 
         // Create buttons & add listeners
-        TextButton crossButton = new TextButton("Cross", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        crossButton = new TextButton("Cross", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         crossButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -280,9 +342,9 @@ public class AirplaneCommandHandler extends Table {
                 selected.cross();
             }
         });
-        t.addActor(crossButton);
+//        t.addActor(crossButton);
 
-        TextButton exitRunwayButton = new TextButton("Exit Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
+        exitRunwayButton = new TextButton("Exit Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         exitRunwayButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -297,63 +359,63 @@ public class AirplaneCommandHandler extends Table {
             }
         });
         setValueButtonGroup.add(exitRunwayButton);
-        t.addActor(exitRunwayButton);
+//        t.addActor(exitRunwayButton);
 
-        TextButton extendCrosswindButton = new TextButton("Extend Crosswind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        extendCrosswindButton = new TextButton("Extend Crosswind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendCrosswindButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendCrosswind(10);
             }
         });
-        t.addActor(extendCrosswindButton);
+//        t.addActor(extendCrosswindButton);
 
-        TextButton extendCrosswindOneMileButton = new TextButton("Extend Crosswind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        extendCrosswindOneMileButton = new TextButton("Extend Crosswind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendCrosswindOneMileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendCrosswind(1);
             }
         });
-        t.addActor(extendCrosswindOneMileButton);
+//        t.addActor(extendCrosswindOneMileButton);
 
-        TextButton extendDownwindButton = new TextButton("Extend Downwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        extendDownwindButton = new TextButton("Extend Downwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendDownwindButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendDownwind(10);
             }
         });
-        t.addActor(extendDownwindButton);
+//        t.addActor(extendDownwindButton);
 
-        TextButton extendDownwindOneMileButton = new TextButton("Extend Downwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        extendDownwindOneMileButton = new TextButton("Extend Downwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendDownwindOneMileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendDownwind(1);
             }
         });
-        t.addActor(extendDownwindOneMileButton);
+//        t.addActor(extendDownwindOneMileButton);
 
-        TextButton extendUpwindButton = new TextButton("Extend Upwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        extendUpwindButton = new TextButton("Extend Upwind", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendUpwindButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendUpwind(10);
             }
         });
-        t.addActor(extendUpwindButton);
+//        t.addActor(extendUpwindButton);
 
-        TextButton extendUpwindOneMileButton = new TextButton("Extend Upwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        extendUpwindOneMileButton = new TextButton("Extend Upwind 1 Mile", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         extendUpwindOneMileButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.extendUpwind(1);
             }
         });
-        t.addActor(extendUpwindOneMileButton);
+//        t.addActor(extendUpwindOneMileButton);
 
-        TextButton goAroundButton = new TextButton("Go Around", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        goAroundButton = new TextButton("Go Around", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         goAroundButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -363,9 +425,9 @@ public class AirplaneCommandHandler extends Table {
                     selected.goAroundVFR();
             }
         });
-        t.addActor(goAroundButton);
+//        t.addActor(goAroundButton);
 
-        TextButton lineUpButton = new TextButton("Line Up & Wait", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        lineUpButton = new TextButton("Line Up & Wait", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         lineUpButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -373,28 +435,28 @@ public class AirplaneCommandHandler extends Table {
                 System.out.println(selected.toString() + ": Lining up and waiting...");
             }
         });
-        t.addActor(lineUpButton);
+//        t.addActor(lineUpButton);
 
 
-        TextButton makeLeft360Button = new TextButton("Make Left 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        makeLeft360Button = new TextButton("Make Left 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         makeLeft360Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.makeLeft360();
             }
         });
-        t.addActor(makeLeft360Button);
+//        t.addActor(makeLeft360Button);
 
-        TextButton makeRight360Button = new TextButton("Make Right 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        makeRight360Button = new TextButton("Make Right 360", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         makeRight360Button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.makeRight360();
             }
         });
-        t.addActor(makeRight360Button);
+//        t.addActor(makeRight360Button);
 
-        TextButton setDeparturePathButton = new TextButton("Set Departure Path", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
+        setDeparturePathButton = new TextButton("Set Departure Path", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         setDeparturePathButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -409,9 +471,9 @@ public class AirplaneCommandHandler extends Table {
             }
         });
         setValueButtonGroup.add(setDeparturePathButton);
-        t.addActor(setDeparturePathButton);
+//        t.addActor(setDeparturePathButton);
 
-        TextButton setNextVectorButton = new TextButton("Set Next Vector", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
+        setNextVectorButton = new TextButton("Set Next Vector", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         setNextVectorButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -426,9 +488,9 @@ public class AirplaneCommandHandler extends Table {
             }
         });
         setValueButtonGroup.add(setNextVectorButton);
-        t.addActor(setNextVectorButton);
+//        t.addActor(setNextVectorButton);
 
-        TextButton setRunwayButton = new TextButton("Set Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
+        setRunwayButton = new TextButton("Set Runway", Configuration.UI.getButtonStyle(true, false, Color.WHITE));
         setRunwayButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
@@ -443,16 +505,16 @@ public class AirplaneCommandHandler extends Table {
             }
         });
         setValueButtonGroup.add(setRunwayButton);
-        t.addActor(setRunwayButton);
+//        t.addActor(setRunwayButton);
 
-        TextButton turnBaseButton = new TextButton("Turn Base", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
+        turnBaseButton = new TextButton("Turn Base", Configuration.UI.getButtonStyle(false, false, Color.WHITE));
         turnBaseButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent changeEvent, Actor actor) {
                 selected.turnBase();
             }
         });
-        t.addActor(turnBaseButton);
+//        t.addActor(turnBaseButton);
 
 //        final TextButton pausePlaneButton = new TextButton("Pause Plane", Configuration.UI.getButtonStyle(false, false, Color.YELLOW));
 //        final TextButton resumePlaneButton = new TextButton("Resume Plane", Configuration.UI.getButtonStyle(false, false, Color.GREEN));
@@ -485,8 +547,8 @@ public class AirplaneCommandHandler extends Table {
             }
         });
 
-        t.addActor(pausePlaneButton);
-        t.addActor(removePlaneButton);
+//        t.addActor(pausePlaneButton);
+//        t.addActor(removePlaneButton);
 
         return t;
     }
@@ -631,6 +693,10 @@ public class AirplaneCommandHandler extends Table {
                 selected = p;
                 column2Container.setVisible(true);
                 planeInfoTableContainer.setVisible(true);
+                setValueButtonGroup.uncheckAll();
+
+                showButtons();
+                updatePauseButton();
             }
         });
         p.setTextButton(button);
